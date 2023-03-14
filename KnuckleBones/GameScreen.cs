@@ -15,15 +15,15 @@ namespace KnuckleBones
     public partial class GameScreen : Form
     {
 
-        int col, row, dice, pos=1, defWidth = 100, defHeight = 30, offset;
+        int col, row, dice, pos = 1, defWidth = 100, defHeight = 30, offset;
         Player player1, player2;
         Color cFond;
         Pen pen;
         bool top = true;
         Graphics g;
         List<Player> players = new List<Player>();
-        
-        public GameScreen(int numDice,int numCol,int numRow)
+
+        public GameScreen(int numDice, int numCol, int numRow)
         {
             dice = numDice;
             col = numCol;
@@ -36,7 +36,7 @@ namespace KnuckleBones
             player2.Offset = offset;
             players.Add(player1);
             players.Add(player2);
-            
+
         }
 
         #region Bases
@@ -90,7 +90,7 @@ namespace KnuckleBones
         int RandomDice()
         {
             Random rnd = new Random();
-            int number = rnd.Next(1, 6);
+            int number = rnd.Next(1, 7);
             return number;
         }
         void Swap()
@@ -102,7 +102,7 @@ namespace KnuckleBones
         #endregion
 
         #region Drawings
-        void Draw(int startX, int startY, int rectangleWidth,int rectangleHeight, int rows, int colmns)
+        void Draw(int startX, int startY, int rectangleWidth, int rectangleHeight, int rows, int colmns)
         {
             g = CreateGraphics();
             for (int i = 0; i < rows; i++)
@@ -118,7 +118,7 @@ namespace KnuckleBones
                 }
             }
         }
-        void HighlightColumn(int colIndex, int startX , int startY, int rectangleWidth, int rectangleHeight, int rows, Color color)
+        void HighlightColumn(int colIndex, int startX, int startY, int rectangleWidth, int rectangleHeight, int rows, Color color)
         {
             g = CreateGraphics();
             int x = startX + colIndex * rectangleWidth;
@@ -279,19 +279,19 @@ namespace KnuckleBones
                         pos++;
                         HighlightColumn(pos, 0, offset, defWidth, defHeight, row, Color.PapayaWhip);
                     }
-                    
+
                 }
 
             }
             else if (keyData == Keys.Enter)
-            { 
+            {
                 if (top)
-                { 
+                {
                     HighlightColumn(pos, 0, 0, defWidth, defHeight, row, cFond);
                     player1.AddValue(pos, RandomDice());
                 }
                 else
-                { 
+                {
                     HighlightColumn(pos, 0, offset, defWidth, defHeight, row, cFond);
                     player2.AddValue(pos, RandomDice());
                 }
