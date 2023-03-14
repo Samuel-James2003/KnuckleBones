@@ -9,8 +9,8 @@ namespace KnuckleBones
     class Player
     {
         int[,] _gameMatrix;
-        int rows, columns, offset=0;
-        
+        int rows, columns, offset = 0;
+
         public int[,] GameMatrix
         {
             get { return _gameMatrix; }
@@ -165,7 +165,7 @@ namespace KnuckleBones
         {
             for (int i = 0; i < rows; i++)
             {
-                if(GameMatrix[i,column]==0)
+                if (GameMatrix[i, column] == 0)
                 {
                     GameMatrix[i, column] = value;
                     return;
