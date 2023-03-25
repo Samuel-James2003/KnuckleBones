@@ -33,7 +33,6 @@ namespace KnuckleBones
             _gameMatrix = new int[columns, rows];
             this.rows = rows;
             this.columns = columns;
-            //_gameMatrix.Initialize();
         }
 
         #region Private
@@ -142,20 +141,20 @@ namespace KnuckleBones
         {
             for (int i = 0; i < rows; i++)
             {
-                if (GameMatrix[column, i] == value)
-                    GameMatrix[column, i] = 0;
+                if (GameMatrix[i, column] == value)
+                    GameMatrix[i, column] = 0;
             }
 
             for (int x = 0; x < rows; x++)
             {
-                for (int i = 0; i < rows; i++)
+                for (int i = 0; i < rows - 1; i++)
                 {
-                    if (GameMatrix[column, i] == 0)
+                    if (GameMatrix[i, column] == 0)
                     {
-                        GameMatrix[column, i] = GameMatrix[column, i + 1];
+                        GameMatrix[i, column] = GameMatrix[i + 1, column];
                         if (i < rows)
                         {
-                            GameMatrix[column, i + 1] = 0;
+                            GameMatrix[i + 1, column] = 0;
                         }
                     }
                 }
@@ -173,9 +172,5 @@ namespace KnuckleBones
             }
         }
         #endregion
-
-
-
-
     }
 }

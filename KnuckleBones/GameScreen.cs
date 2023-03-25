@@ -14,20 +14,23 @@ namespace KnuckleBones
 {
     public partial class GameScreen : Form
     {
-
-        int col, row, dice, pos = 1, defWidth = 100, defHeight = 30, offset;
+        #region Variables
+        int col, row, dice, pos = 1, defWidth = 100, defHeight = 30, offset, waythrough = 0;
+        int[] dicelist;
         Player player1, player2;
         Color cFond;
         Pen pen;
-        bool top = true;
+        bool top = true, isAllowed = false;
         Graphics g;
         List<Player> players = new List<Player>();
+        #endregion
 
         public GameScreen(int numDice, int numCol, int numRow)
         {
             dice = numDice;
             col = numCol;
             row = numRow;
+            dicelist = new int[dice];
             offset = defHeight * (row + 3);
             pen = new Pen(Color.Black, 1);
             InitializeComponent();
@@ -36,7 +39,6 @@ namespace KnuckleBones
             player2.Offset = offset;
             players.Add(player1);
             players.Add(player2);
-
         }
 
         #region Bases
@@ -51,10 +53,10 @@ namespace KnuckleBones
         {
             g = CreateGraphics();
             Draw(0, 0, defWidth, defHeight, row, col);
-            Draw(col * defWidth, row * defHeight / 2, 30, 30, dice, 1);
+            Draw(col * defWidth, row * defHeight / 2, defHeight, defHeight, dice, 1);
 
             Draw(0, offset, defWidth, defHeight, row, col);
-            Draw(col * defWidth, offset + row * defHeight / 2, 30, 30, dice, 1);
+            Draw(col * defWidth, offset + row * defHeight / 2, defHeight, defHeight, dice, 1);
             g.Dispose();
         }
         void ReFill()
@@ -89,7 +91,7 @@ namespace KnuckleBones
         }
         int RandomDice()
         {
-            Random rnd = new Random();
+            var rnd = new Random();
             int number = rnd.Next(1, 7);
             return number;
         }
@@ -97,6 +99,73 @@ namespace KnuckleBones
         {
             pos = 1;
             top = !top;
+
+        }
+        private bool AddValueToGameMatrix()
+        {
+            if (waythrough >= dice)
+            {
+                isAllowed = false;
+                return false;
+            }
+
+            if (top)
+            {
+                HighlightColumn(pos, 0, 0, defWidth, defHeight, row, cFond);
+                player1.AddValue(pos, dicelist[waythrough]);
+                EmptyDicelist(false);
+            }
+            else
+            {
+                HighlightColumn(pos, 0, offset, defWidth, defHeight, row, cFond);
+                player2.AddValue(pos, dicelist[waythrough]);
+                EmptyDicelist(true);
+            }
+            return true;
+        }
+        private void HighlightRight()
+        {
+            if (pos < col - 1)
+            {
+                if (top)
+                {
+                    HighlightColumn(pos, 0, 0, defWidth, defHeight, row, cFond);
+                    pos++;
+                    HighlightColumn(pos, 0, 0, defWidth, defHeight, row, Color.PapayaWhip);
+                }
+
+                else
+                {
+                    HighlightColumn(pos, 0, offset, defWidth, defHeight, row, cFond);
+                    pos++;
+                    HighlightColumn(pos, 0, offset, defWidth, defHeight, row, Color.PapayaWhip);
+                }
+
+            }
+        }
+        private void HighlightLeft()
+        {
+            if (pos > 0)
+            {
+                if (top)
+                {
+                    HighlightColumn(pos, 0, 0, defWidth, defHeight, row, cFond);
+                    pos--;
+                    HighlightColumn(pos, 0, 0, defWidth, defHeight, row, Color.PapayaWhip);
+                }
+
+                else
+                {
+                    HighlightColumn(pos, 0, offset, defWidth, defHeight, row, cFond);
+                    pos--;
+                    HighlightColumn(pos, 0, offset, defWidth, defHeight, row, Color.PapayaWhip);
+                }
+            }
+        }
+        void EmptyDicelist(bool isOffset)
+        {
+            EraseDicesInRectangle(isOffset, waythrough);
+            dicelist[waythrough] = 0;
 
         }
         #endregion
@@ -189,25 +258,52 @@ namespace KnuckleBones
 
             DrawString(textX, textY, text.ToString(), color);
         }
+        void DrawDicesInRectangle(bool isOffset, int text, int i)
+        {
+            int x = col * defWidth + 10, y = row * defHeight / 2 + i * defHeight + 5;
+
+            if (isOffset)
+                y += offset;
+
+            DrawString(x, y, text);
+
+        }
+        void EraseDicesInRectangle(bool isOffset, int b)
+        {
+            int x = col * defWidth + 10, y = row * defHeight / 2 + b * defHeight + 5;
+
+            if (isOffset)
+                y += offset;
+            for (int i = 0; i < 10; i++)
+            {
+                DrawString(x, y, i.ToString(), cFond);
+            }
+
+        }
         #endregion
 
         #region Gamestates
         void Turn(Player player)
         {
+            waythrough = 0;
+            dicelist.Initialize();
+            bool isOffset = true;
             if (player.isFull())
-            {
                 GameOver();
-            }
+
+            if (player.Offset == 0)
+                isOffset = false;
 
             for (int i = 0; i < dice; i++)
             {
-
-                DrawStringInRectangle(col * defWidth, row * defHeight / 2, true, RandomDice());
-
+                dicelist[i] = RandomDice();
+                DrawDicesInRectangle(isOffset, dicelist[i], i);
+                isAllowed = true;
             }
         }
         void GameOver()
         {
+            isAllowed = false;
             if (player1.Score > player2.Score)
             {
                 //player one wins
@@ -242,73 +338,45 @@ namespace KnuckleBones
         }
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            GameBackGround();
-            if (keyData == Keys.Left)
+            if (isAllowed)
             {
-                if (pos > 0)
-                {
-                    if (top)
-                    {
-                        HighlightColumn(pos, 0, 0, defWidth, defHeight, row, cFond);
-                        pos--;
-                        HighlightColumn(pos, 0, 0, defWidth, defHeight, row, Color.PapayaWhip);
-                    }
+                GameBackGround();
 
-                    else
-                    {
-                        HighlightColumn(pos, 0, offset, defWidth, defHeight, row, cFond);
-                        pos--;
-                        HighlightColumn(pos, 0, offset, defWidth, defHeight, row, Color.PapayaWhip);
-                    }
+                if (keyData == Keys.Left)
+                {
+                    HighlightLeft();
                 }
+                else if (keyData == Keys.Right)
+                {
+                    HighlightRight();
+
+                }
+                else if (keyData == Keys.Enter)
+                {
+
+                    if (!AddValueToGameMatrix())
+                    {
+                        return base.ProcessCmdKey(ref msg, keyData);
+                    }
+                    waythrough++;
+                }
+                ReFill();
             }
-            else if (keyData == Keys.Right)
-            {
-                if (pos < col - 1)
-                {
-                    if (top)
-                    {
-                        HighlightColumn(pos, 0, 0, defWidth, defHeight, row, cFond);
-                        pos++;
-                        HighlightColumn(pos, 0, 0, defWidth, defHeight, row, Color.PapayaWhip);
-                    }
 
-                    else
-                    {
-                        HighlightColumn(pos, 0, offset, defWidth, defHeight, row, cFond);
-                        pos++;
-                        HighlightColumn(pos, 0, offset, defWidth, defHeight, row, Color.PapayaWhip);
-                    }
-
-                }
-
-            }
-            else if (keyData == Keys.Enter)
-            {
-                if (top)
-                {
-                    HighlightColumn(pos, 0, 0, defWidth, defHeight, row, cFond);
-                    player1.AddValue(pos, RandomDice());
-                }
-                else
-                {
-                    HighlightColumn(pos, 0, offset, defWidth, defHeight, row, cFond);
-                    player2.AddValue(pos, RandomDice());
-                }
-            }
-            ReFill();
             return base.ProcessCmdKey(ref msg, keyData);
 
         }
         private void button1_Click(object sender, EventArgs e)
         {
-            ReFill();
-            player1.AddValue(0, 4);
-            player1.AddValue(0, 4);
-            player2.AddValue(1, 2);
-            ReFill();
-            ShowScores();
-            Swap();
+            foreach (var player in players)
+            {
+                Turn(player);
+                ReFill();
+                ShowScores();
+
+            }
+
+
         }
         #endregion
     }

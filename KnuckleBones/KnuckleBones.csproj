@@ -52,7 +52,6 @@
     <Compile Include="GameScreen.Designer.cs">
       <DependentUpon>GameScreen.cs</DependentUpon>
     </Compile>
-    <Compile Include="MyRectangle.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Settings.cs">
       <SubType>Form</SubType>
