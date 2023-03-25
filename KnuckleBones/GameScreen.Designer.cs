@@ -29,11 +29,13 @@ namespace KnuckleBones
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.tbposY = new System.Windows.Forms.Label();
             this.tbposX = new System.Windows.Forms.Label();
             this.p1score = new System.Windows.Forms.TextBox();
             this.p2score = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
+            this.TurnTimer = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // tbposY
@@ -78,6 +80,11 @@ namespace KnuckleBones
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // TurnTimer
+            // 
+            this.TurnTimer.Interval = 1000;
+            this.TurnTimer.Tick += new System.EventHandler(this.GameTurn);
+            // 
             // GameScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -105,5 +112,6 @@ namespace KnuckleBones
         private System.Windows.Forms.TextBox p1score;
         private System.Windows.Forms.TextBox p2score;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Timer TurnTimer;
     }
 }

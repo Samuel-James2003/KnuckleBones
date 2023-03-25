@@ -20,7 +20,7 @@ namespace KnuckleBones
         Player player1, player2;
         Color cFond;
         Pen pen;
-        bool top = true, isAllowed = false;
+        bool top = true, isAllowed = false, tick1 = true;
         Graphics g;
         List<Player> players = new List<Player>();
         #endregion
@@ -97,6 +97,9 @@ namespace KnuckleBones
         }
         void Swap()
         {
+
+            waythrough = 0;
+            dicelist.Initialize();
             pos = 1;
             top = !top;
 
@@ -105,6 +108,7 @@ namespace KnuckleBones
         {
             if (waythrough >= dice)
             {
+                Swap();
                 isAllowed = false;
                 return false;
             }
@@ -283,10 +287,22 @@ namespace KnuckleBones
         #endregion
 
         #region Gamestates
-        void Turn(Player player)
+        private void GameTurn(object sender, EventArgs e)
         {
-            waythrough = 0;
-            dicelist.Initialize();
+            if (tick1)
+            {
+                Turns(player1);
+            }
+            else
+            {
+                Turns(player2);
+            }
+            tick1 = !tick1;
+
+        }
+        void Turns(Player player)
+        {
+            TurnTimer.Enabled = false;
             bool isOffset = true;
             if (player.isFull())
                 GameOver();
@@ -300,6 +316,7 @@ namespace KnuckleBones
                 DrawDicesInRectangle(isOffset, dicelist[i], i);
                 isAllowed = true;
             }
+
         }
         void GameOver()
         {
@@ -356,6 +373,8 @@ namespace KnuckleBones
 
                     if (!AddValueToGameMatrix())
                     {
+
+                        TurnTimer.Enabled = true;
                         return base.ProcessCmdKey(ref msg, keyData);
                     }
                     waythrough++;
@@ -363,21 +382,17 @@ namespace KnuckleBones
                 ReFill();
             }
 
+
+
             return base.ProcessCmdKey(ref msg, keyData);
 
         }
         private void button1_Click(object sender, EventArgs e)
         {
-            foreach (var player in players)
-            {
-                Turn(player);
-                ReFill();
-                ShowScores();
-
-            }
-
-
+            TurnTimer.Enabled = true;
         }
         #endregion
+
+        //Known bug : The swap doesnt work well when the dice = 1 because it goes throw with waythrough = 0 and waits for waythrough to be equals to one to be able to swap. 
     }
 }
