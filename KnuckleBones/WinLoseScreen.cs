@@ -15,7 +15,7 @@ namespace KnuckleBones
 
         }
 
-        public WinLoseScreen(int score, string names, string isTied)
+        public WinLoseScreen(int score, string names, string _)
         {
             InitializeComponent();
             this.score = score;
