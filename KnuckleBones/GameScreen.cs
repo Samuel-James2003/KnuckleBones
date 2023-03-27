@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Windows.Forms;
 
 
@@ -104,26 +98,33 @@ namespace KnuckleBones
             top = !top;
 
         }
+        void IsGameOver()
+        {
+            foreach (var player in players)
+                if (player.isFull())
+                    GameOver();
+
+        }
         private bool AddValueToGameMatrix()
         {
-            if (waythrough >= dice)
-            {
-                Swap();
-                isAllowed = false;
-                return false;
-            }
-
             if (top)
             {
                 HighlightColumn(pos, 0, 0, defWidth, defHeight, row, cFond);
                 player1.AddValue(pos, dicelist[waythrough]);
+                player2.CheckRemove(pos, dicelist[waythrough]);
                 EmptyDicelist(false);
             }
             else
             {
                 HighlightColumn(pos, 0, offset, defWidth, defHeight, row, cFond);
                 player2.AddValue(pos, dicelist[waythrough]);
+                player1.CheckRemove(pos, dicelist[waythrough]);
                 EmptyDicelist(true);
+            }
+            if (waythrough >= dice - 1)
+            {
+                isAllowed = false;
+                return false;
             }
             return true;
         }
@@ -172,6 +173,20 @@ namespace KnuckleBones
             dicelist[waythrough] = 0;
 
         }
+        void Winner(Player player, string playername)
+        {
+            Hide();
+            Form form = new WinLoseScreen(player.Score, playername);
+            form.ShowDialog();
+            Close();
+        }
+        void Tie()
+        {
+            Hide();
+            Form form = new WinLoseScreen(player1.Score, "Player 1 and Player 2", "No");
+            form.ShowDialog();
+            Close();
+        }
         #endregion
 
         #region Drawings
@@ -189,17 +204,6 @@ namespace KnuckleBones
                     g.DrawLine(pen, x + rectangleWidth, y + rectangleHeight, x, y + rectangleHeight);
                     g.DrawLine(pen, x, y + rectangleHeight, x, y);
                 }
-            }
-        }
-        void HighlightColumn(int colIndex, int startX, int startY, int rectangleWidth, int rectangleHeight, int rows, Color color)
-        {
-            g = CreateGraphics();
-            int x = startX + colIndex * rectangleWidth;
-            for (int i = 0; i < rows; i++)
-            {
-                int y = startY + i * rectangleHeight;
-                g.FillRectangle(new SolidBrush(color),
-                    new Rectangle(x, y, rectangleWidth - 1, rectangleHeight - 1));
             }
         }
         void DrawString(int x, int y, string drawString, Color color)
@@ -227,6 +231,17 @@ namespace KnuckleBones
             drawFont.Dispose();
             drawBrush.Dispose();
             g.Dispose();
+        }
+        void HighlightColumn(int colIndex, int startX, int startY, int rectangleWidth, int rectangleHeight, int rows, Color color)
+        {
+            g = CreateGraphics();
+            int x = startX + colIndex * rectangleWidth;
+            for (int i = 0; i < rows; i++)
+            {
+                int y = startY + i * rectangleHeight;
+                g.FillRectangle(new SolidBrush(color),
+                    new Rectangle(x, y, rectangleWidth - 1, rectangleHeight - 1));
+            }
         }
         void DrawStringInRectangle(int x, int y, bool isDice, int text)
         {
@@ -290,23 +305,20 @@ namespace KnuckleBones
         private void GameTurn(object sender, EventArgs e)
         {
             if (tick1)
-            {
                 Turns(player1);
-            }
             else
-            {
                 Turns(player2);
-            }
-            tick1 = !tick1;
 
+            GameBackGround();
+            ReFill();
+            IsGameOver();
+            tick1 = !tick1;
         }
         void Turns(Player player)
         {
             TurnTimer.Enabled = false;
             bool isOffset = true;
-            if (player.isFull())
-                GameOver();
-
+            IsGameOver();
             if (player.Offset == 0)
                 isOffset = false;
 
@@ -316,23 +328,22 @@ namespace KnuckleBones
                 DrawDicesInRectangle(isOffset, dicelist[i], i);
                 isAllowed = true;
             }
-
+            ShowScores();
+            IsGameOver();
         }
         void GameOver()
         {
             isAllowed = false;
+            TurnTimer.Enabled = false;
+
             if (player1.Score > player2.Score)
-            {
-                //player one wins
-            }
+                Winner(player1, "Player 1");
+
             else if (player1.Score == player2.Score)
-            {
-                //tie
-            }
+                Tie();
+
             else
-            {
-                //player 3 wins
-            }
+                Winner(player2, "Player 2");
 
         }
         #endregion
@@ -342,11 +353,6 @@ namespace KnuckleBones
         {
             cFond = Color.FromArgb(192, 255, 192);
 
-        }
-        private void GameScreen_MouseMove(object sender, MouseEventArgs e)
-        {
-            tbposX.Text = "Pos X " + Cursor.Position.X.ToString();
-            tbposY.Text = "Pos Y " + Cursor.Position.Y.ToString();
         }
         private void GameScreen_Paint(object sender, PaintEventArgs e)
         {
@@ -373,7 +379,7 @@ namespace KnuckleBones
 
                     if (!AddValueToGameMatrix())
                     {
-
+                        Swap();
                         TurnTimer.Enabled = true;
                         return base.ProcessCmdKey(ref msg, keyData);
                     }
@@ -393,6 +399,5 @@ namespace KnuckleBones
         }
         #endregion
 
-        //Known bug : The swap doesnt work well when the dice = 1 because it goes throw with waythrough = 0 and waits for waythrough to be equals to one to be able to swap. 
     }
 }
