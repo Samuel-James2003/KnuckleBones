@@ -42,6 +42,7 @@ namespace KnuckleBones
             this.winnerBox.Size = new System.Drawing.Size(1472, 765);
             this.winnerBox.TabIndex = 0;
             this.winnerBox.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.winnerBox.Click += new System.EventHandler(this.winnerBox_Click);
             // 
             // WinLoseScreen
             // 

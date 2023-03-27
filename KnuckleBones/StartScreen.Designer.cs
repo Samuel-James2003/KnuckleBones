@@ -34,7 +34,7 @@ namespace KnuckleBones
             this.Group = new System.Windows.Forms.GroupBox();
             this.btnHelp = new System.Windows.Forms.Button();
             this.btnStart = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lbTitle = new System.Windows.Forms.Label();
             this.Group.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -99,31 +99,27 @@ namespace KnuckleBones
             this.btnStart.UseVisualStyleBackColor = false;
             this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
-            // label1
+            // lbTitle
             // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(446, 231);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(400, 64);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "Knuckle Bones";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lbTitle.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lbTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbTitle.Location = new System.Drawing.Point(0, 0);
+            this.lbTitle.Name = "lbTitle";
+            this.lbTitle.Size = new System.Drawing.Size(1244, 473);
+            this.lbTitle.TabIndex = 3;
+            this.lbTitle.Text = "Knuckle Bones";
+            this.lbTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // StartScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1244, 648);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.lbTitle);
             this.Controls.Add(this.Group);
             this.Name = "StartScreen";
             this.Group.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -134,7 +130,7 @@ namespace KnuckleBones
         private System.Windows.Forms.GroupBox Group;
         private System.Windows.Forms.Button btnHelp;
         private System.Windows.Forms.Button btnStart;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lbTitle;
     }
 }
 

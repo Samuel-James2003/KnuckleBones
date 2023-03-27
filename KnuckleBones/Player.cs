@@ -111,7 +111,7 @@ namespace KnuckleBones
         {
             for (int i = 0; i < rows; i++)
             {
-                if (GameMatrix[column, i] == 0)
+                if (GameMatrix[i, column] == 0)
                     return false;
             }
             return true;

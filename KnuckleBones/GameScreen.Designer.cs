@@ -30,21 +30,21 @@ namespace KnuckleBones
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnStart = new System.Windows.Forms.Button();
             this.TurnTimer = new System.Windows.Forms.Timer(this.components);
             this.p1score = new System.Windows.Forms.Label();
             this.p2score = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // button1
+            // btnStart
             // 
-            this.button1.Location = new System.Drawing.Point(928, 102);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(106, 45);
-            this.button1.TabIndex = 7;
-            this.button1.Text = "Start";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnStart.Location = new System.Drawing.Point(928, 102);
+            this.btnStart.Name = "btnStart";
+            this.btnStart.Size = new System.Drawing.Size(106, 45);
+            this.btnStart.TabIndex = 7;
+            this.btnStart.Text = "Start";
+            this.btnStart.UseVisualStyleBackColor = true;
+            this.btnStart.Click += new System.EventHandler(this.btnStart_click);
             // 
             // TurnTimer
             // 
@@ -76,7 +76,7 @@ namespace KnuckleBones
             this.ClientSize = new System.Drawing.Size(1175, 752);
             this.Controls.Add(this.p2score);
             this.Controls.Add(this.p1score);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnStart);
             this.Name = "GameScreen";
             this.Text = "GameScreen";
             this.Load += new System.EventHandler(this.GameScreen_Load);
@@ -87,7 +87,7 @@ namespace KnuckleBones
         }
 
         #endregion
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Timer TurnTimer;
         private System.Windows.Forms.Label p1score;
         private System.Windows.Forms.Label p2score;

@@ -7,11 +7,17 @@ namespace KnuckleBones
     {
         string isTied = "No", pName, WinText;
         int score;
-        public WinLoseScreen(int score, string pName)
+        public WinLoseScreen(int score, string pName, System.Drawing.Color color)
         {
             InitializeComponent();
             this.score = score;
             this.pName = pName;
+            BackColor = color;
+
+        }
+
+        private void winnerBox_Click(object sender, EventArgs e)
+        {
 
         }
 
@@ -20,7 +26,7 @@ namespace KnuckleBones
             InitializeComponent();
             this.score = score;
             pName = names;
-            this.isTied = "Yes";
+            isTied = "Yes";
 
         }
 
@@ -44,6 +50,7 @@ namespace KnuckleBones
                     "Great job!"
                     + "\nWith a score of " + score;
                 winnerBox.Text = WinText;
+
             }
         }
     }

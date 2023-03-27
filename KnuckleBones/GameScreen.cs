@@ -109,17 +109,29 @@ namespace KnuckleBones
         {
             if (top)
             {
-                HighlightColumn(pos, 0, 0, defWidth, defHeight, row, cFond);
-                player1.AddValue(pos, dicelist[waythrough]);
-                player2.CheckRemove(pos, dicelist[waythrough]);
-                EmptyDicelist(false);
+                if (!player1.isFull(pos))
+                {
+                    HighlightColumn(pos, 0, 0, defWidth, defHeight, row, cFond);
+                    player1.AddValue(pos, dicelist[waythrough]);
+                    player2.CheckRemove(pos, dicelist[waythrough]);
+                    EmptyDicelist(false);
+                }
+                else
+                    waythrough--;
+
             }
             else
             {
-                HighlightColumn(pos, 0, offset, defWidth, defHeight, row, cFond);
-                player2.AddValue(pos, dicelist[waythrough]);
-                player1.CheckRemove(pos, dicelist[waythrough]);
-                EmptyDicelist(true);
+                if (!player2.isFull(pos))
+                {
+                    HighlightColumn(pos, 0, offset, defWidth, defHeight, row, cFond);
+                    player2.AddValue(pos, dicelist[waythrough]);
+                    player1.CheckRemove(pos, dicelist[waythrough]);
+                    EmptyDicelist(true);
+                }
+                else
+                    waythrough--;
+
             }
             if (waythrough >= dice - 1)
             {
@@ -173,10 +185,10 @@ namespace KnuckleBones
             dicelist[waythrough] = 0;
 
         }
-        void Winner(Player player, string playername)
+        void Winner(Player player, string playername, Color color)
         {
             Hide();
-            Form form = new WinLoseScreen(player.Score, playername);
+            Form form = new WinLoseScreen(player.Score, playername, color);
             form.ShowDialog();
             Close();
         }
@@ -337,13 +349,13 @@ namespace KnuckleBones
             TurnTimer.Enabled = false;
 
             if (player1.Score > player2.Score)
-                Winner(player1, "Player 1");
+                Winner(player1, "Player 1", Color.LightBlue);
 
             else if (player1.Score == player2.Score)
                 Tie();
 
             else
-                Winner(player2, "Player 2");
+                Winner(player2, "Player 2", Color.Pink);
 
         }
         #endregion
@@ -393,8 +405,9 @@ namespace KnuckleBones
             return base.ProcessCmdKey(ref msg, keyData);
 
         }
-        private void button1_Click(object sender, EventArgs e)
+        private void btnStart_click(object sender, EventArgs e)
         {
+            btnStart.Visible = false;
             TurnTimer.Enabled = true;
         }
         #endregion
