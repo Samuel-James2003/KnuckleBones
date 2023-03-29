@@ -17,6 +17,8 @@ namespace KnuckleBones
         bool top = true, isAllowed = false, tick1 = true;
         Graphics g;
         List<Player> players = new List<Player>();
+        Random random = new Random();
+
         #endregion
 
         public GameScreen(int numDice, int numCol, int numRow)
@@ -40,8 +42,12 @@ namespace KnuckleBones
         {
             for (int i = 0; i < row; i++)
                 for (int j = 0; j < col; j++)
-                    for (int c = 0; c < 7; c++)
+                    for (int c = 0; c < 9; c++)
+                    {
                         DrawStringInRectangle(j * defWidth, i * defHeight, false, c, cFond);
+                        DrawStringInRectangle(j * defWidth, i * defHeight+offset, false, c, cFond);
+                    }
+                        
         }
         void GameBackGround()
         {
@@ -71,8 +77,6 @@ namespace KnuckleBones
                         {
                             DrawStringInRectangle(j * defWidth, i * defHeight + offset, false, value);
                         }
-
-
                     }
             }
 
@@ -85,13 +89,12 @@ namespace KnuckleBones
         }
         int RandomDice()
         {
-            var rnd = new Random();
-            int number = rnd.Next(1, 7);
-            return number;
+            return random.Next(1, 7);
         }
+
         void Swap()
         {
-
+            ReFill();
             waythrough = 0;
             dicelist.Initialize();
             pos = 1;
@@ -185,7 +188,7 @@ namespace KnuckleBones
             dicelist[waythrough] = 0;
 
         }
-        void Winner(Player player, string playername, Color color)
+        void WinnerIs(Player player, string playername, Color color)
         {
             Hide();
             Form form = new WinLoseScreen(player.Score, playername, color);
@@ -349,13 +352,13 @@ namespace KnuckleBones
             TurnTimer.Enabled = false;
 
             if (player1.Score > player2.Score)
-                Winner(player1, "Player 1", Color.LightBlue);
+                WinnerIs(player1, "Player 1", Color.LightBlue);
 
             else if (player1.Score == player2.Score)
                 Tie();
 
             else
-                Winner(player2, "Player 2", Color.Pink);
+                WinnerIs(player2, "Player 2", Color.Pink);
 
         }
         #endregion

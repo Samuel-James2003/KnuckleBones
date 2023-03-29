@@ -64,6 +64,7 @@ namespace KnuckleBones
             // 
             // Group
             // 
+            this.Group.BackColor = System.Drawing.SystemColors.Control;
             this.Group.Controls.Add(this.btnHelp);
             this.Group.Controls.Add(this.btnStart);
             this.Group.Controls.Add(this.btnQuit);
@@ -101,6 +102,7 @@ namespace KnuckleBones
             // 
             // lbTitle
             // 
+            this.lbTitle.BackColor = System.Drawing.Color.Silver;
             this.lbTitle.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lbTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbTitle.Location = new System.Drawing.Point(0, 0);
@@ -118,6 +120,7 @@ namespace KnuckleBones
             this.Controls.Add(this.lbTitle);
             this.Controls.Add(this.Group);
             this.Name = "StartScreen";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Group.ResumeLayout(false);
             this.ResumeLayout(false);
 

@@ -53,6 +53,7 @@ namespace KnuckleBones
             this.Controls.Add(this.winnerBox);
             this.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
             this.Name = "WinLoseScreen";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "WinLoseScreen";
             this.Load += new System.EventHandler(this.WinLoseScreen_Load);
             this.ResumeLayout(false);

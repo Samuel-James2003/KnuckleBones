@@ -78,6 +78,7 @@ namespace KnuckleBones
             this.Controls.Add(this.p1score);
             this.Controls.Add(this.btnStart);
             this.Name = "GameScreen";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "GameScreen";
             this.Load += new System.EventHandler(this.GameScreen_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.GameScreen_Paint);
