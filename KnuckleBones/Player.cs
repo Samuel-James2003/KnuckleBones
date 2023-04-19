@@ -10,6 +10,12 @@ namespace KnuckleBones
     {
         int[,] _gameMatrix;
         int rows, columns, offset = 0;
+        string name;
+
+        public string Name
+        {
+            get { return name; }
+        }
 
         public int[,] GameMatrix
         {
@@ -28,9 +34,10 @@ namespace KnuckleBones
             set { offset = value; }
         }
 
-        public Player(int columns, int rows)
+        public Player(int columns, int rows, string name)
         {
             _gameMatrix = new int[columns, rows];
+            this.name = name;
             this.rows = rows;
             this.columns = columns;
         }
@@ -146,19 +153,12 @@ namespace KnuckleBones
             }
 
             for (int x = 0; x < rows; x++)
-            {
                 for (int i = 0; i < rows - 1; i++)
-                {
                     if (GameMatrix[i, column] == 0)
                     {
                         GameMatrix[i, column] = GameMatrix[i + 1, column];
-                        if (i < rows)
-                        {
-                            GameMatrix[i + 1, column] = 0;
-                        }
+                        if (i < rows) GameMatrix[i + 1, column] = 0;
                     }
-                }
-            }
         }
         public void AddValue(int column, int value)
         {
