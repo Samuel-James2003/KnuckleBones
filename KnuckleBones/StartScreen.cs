@@ -5,18 +5,18 @@ namespace KnuckleBones
 {
     public partial class StartScreen : Form
     {
-        
+
         public StartScreen()
         {
             InitializeComponent();
-            
+
         }
-        
+
 
         private void btnStart_Click(object sender, EventArgs e)
         {
             Hide();
-            Form form = new GameScreen(Settings.dice,Settings.col, Settings.row);
+            Form form = new GameScreen(Settings.dice, Settings.col, Settings.row, Settings.p1Name, Settings.p2Name);
             form.ShowDialog();
             Show();
         }
@@ -48,7 +48,7 @@ namespace KnuckleBones
         {
             Form form = new Settings();
             form.ShowDialog();
-            
+
         }
     }
 }
