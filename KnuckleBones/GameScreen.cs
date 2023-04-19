@@ -14,14 +14,14 @@ namespace KnuckleBones
         Player player1, player2;
         Color cFond;
         Pen pen;
-        bool top = true, isAllowed = false, tick1 = true;
+        bool top = true, isAllowed = false, tick1 = true, gameEnded = false;
         Graphics g;
         List<Player> players = new List<Player>();
         Random random = new Random();
 
         #endregion
 
-        public GameScreen(int numDice, int numCol, int numRow)
+        public GameScreen(int numDice, int numCol, int numRow, string p1Name, string p2Name)
         {
             dice = numDice;
             col = numCol;
@@ -30,12 +30,14 @@ namespace KnuckleBones
             offset = defHeight * (row + 3);
             pen = new Pen(Color.Black, 1);
             InitializeComponent();
-            player1 = new Player(col, row);
-            player2 = new Player(col, row);
+            player1 = new Player(col, row, p1Name);
+            player2 = new Player(col, row, p2Name);
             player2.Offset = offset;
             players.Add(player1);
             players.Add(player2);
         }
+
+        #region Methods
 
         #region Bases
         void ClearScreen()
@@ -45,9 +47,8 @@ namespace KnuckleBones
                     for (int c = 0; c < 9; c++)
                     {
                         DrawStringInRectangle(j * defWidth, i * defHeight, false, c, cFond);
-                        DrawStringInRectangle(j * defWidth, i * defHeight+offset, false, c, cFond);
+                        DrawStringInRectangle(j * defWidth, i * defHeight + offset, false, c, cFond);
                     }
-                        
         }
         void GameBackGround()
         {
@@ -83,7 +84,7 @@ namespace KnuckleBones
         }
         void ShowScores()
         {
-            string P1 = "Player 1 = " + player1.Score.ToString(), P2 = "Player 2 = " + player2.Score.ToString();
+            string P1 = player1.Name + " = " + player1.Score.ToString(), P2 = player2.Name + " = " + player2.Score.ToString();
             p1score.Text = P1;
             p2score.Text = P2;
         }
@@ -91,7 +92,6 @@ namespace KnuckleBones
         {
             return random.Next(1, 7);
         }
-
         void Swap()
         {
             ReFill();
@@ -103,10 +103,17 @@ namespace KnuckleBones
         }
         void IsGameOver()
         {
+            if (gameEnded)
+            { 
+                Close();
+                Dispose(true);
+                Application.Exit();
+            }
+                
+
             foreach (var player in players)
                 if (player.isFull())
                     GameOver();
-
         }
         private bool AddValueToGameMatrix()
         {
@@ -118,10 +125,10 @@ namespace KnuckleBones
                     player1.AddValue(pos, dicelist[waythrough]);
                     player2.CheckRemove(pos, dicelist[waythrough]);
                     EmptyDicelist(false);
+                    IsGameOver();
                 }
                 else
                     waythrough--;
-
             }
             else
             {
@@ -131,13 +138,14 @@ namespace KnuckleBones
                     player2.AddValue(pos, dicelist[waythrough]);
                     player1.CheckRemove(pos, dicelist[waythrough]);
                     EmptyDicelist(true);
+                    IsGameOver();
                 }
                 else
                     waythrough--;
-
             }
             if (waythrough >= dice - 1)
             {
+                IsGameOver();
                 isAllowed = false;
                 return false;
             }
@@ -186,20 +194,22 @@ namespace KnuckleBones
         {
             EraseDicesInRectangle(isOffset, waythrough);
             dicelist[waythrough] = 0;
-
         }
-        void WinnerIs(Player player, string playername, Color color)
+        void WinnerIs(Player player, Color color)
         {
+            gameEnded = true;
             Hide();
-            Form form = new WinLoseScreen(player.Score, playername, color);
-            form.ShowDialog();
+            Form form = new WinLoseScreen(player.Score, player.Name, color, this);
+            form.Show();
             Close();
         }
         void Tie()
         {
+            gameEnded = true;
             Hide();
-            Form form = new WinLoseScreen(player1.Score, "Player 1 and Player 2", "No");
+            Form form = new WinLoseScreen(player1.Score, player1.Name + " " + player2.Name, "No", this);
             form.ShowDialog();
+            Dispose();
             Close();
         }
         #endregion
@@ -209,7 +219,6 @@ namespace KnuckleBones
         {
             g = CreateGraphics();
             for (int i = 0; i < rows; i++)
-            {
                 for (int j = 0; j < colmns; j++)
                 {
                     int x = startX + j * rectangleWidth;
@@ -219,7 +228,6 @@ namespace KnuckleBones
                     g.DrawLine(pen, x + rectangleWidth, y + rectangleHeight, x, y + rectangleHeight);
                     g.DrawLine(pen, x, y + rectangleHeight, x, y);
                 }
-            }
         }
         void DrawString(int x, int y, string drawString, Color color)
         {
@@ -324,9 +332,9 @@ namespace KnuckleBones
             else
                 Turns(player2);
 
+            IsGameOver();
             GameBackGround();
             ReFill();
-            IsGameOver();
             tick1 = !tick1;
         }
         void Turns(Player player)
@@ -352,14 +360,13 @@ namespace KnuckleBones
             TurnTimer.Enabled = false;
 
             if (player1.Score > player2.Score)
-                WinnerIs(player1, "Player 1", Color.LightBlue);
+                WinnerIs(player1, Color.LightBlue);
 
             else if (player1.Score == player2.Score)
                 Tie();
 
             else
-                WinnerIs(player2, "Player 2", Color.Pink);
-
+                WinnerIs(player2, Color.Pink);
         }
         #endregion
 
@@ -367,11 +374,9 @@ namespace KnuckleBones
         private void GameScreen_Load(object sender, EventArgs e)
         {
             cFond = Color.FromArgb(192, 255, 192);
-
         }
         private void GameScreen_Paint(object sender, PaintEventArgs e)
         {
-
             GameBackGround();
         }
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -389,7 +394,7 @@ namespace KnuckleBones
                     HighlightRight();
 
                 }
-                else if (keyData == Keys.Enter)
+                else if (keyData == Keys.Enter || keyData == Keys.Space)
                 {
 
                     if (!AddValueToGameMatrix())
@@ -402,18 +407,45 @@ namespace KnuckleBones
                 }
                 ReFill();
             }
-
-
-
             return base.ProcessCmdKey(ref msg, keyData);
-
         }
         private void btnStart_click(object sender, EventArgs e)
         {
             btnStart.Visible = false;
+            bSkip.Visible = false;
             TurnTimer.Enabled = true;
+        }
+        private void bSkip_Click(object sender, EventArgs e)
+        {
+            player1.AddValue(0, 4);
+            player1.AddValue(1, 4);
+            player1.AddValue(2, 4);
+            player1.AddValue(0, 1);
+            player1.AddValue(1, 1);
+            player1.AddValue(2, 1);
+            player1.AddValue(0, 4);
+            player1.AddValue(1, 4);
+            
+
+            player2.AddValue(1, 1);
+            player2.AddValue(2, 1);
+            player2.AddValue(0, 4);
+            player2.AddValue(1, 5);
+            player2.AddValue(2, 4);
+            player2.AddValue(0, 6);
+            player2.AddValue(1, 2);
+            player2.AddValue(2, 1);
+
+            btnStart.Visible = false;
+            bSkip.Visible = false;
+            TurnTimer.Enabled = true;
+        }
+        private void GameScreen_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Dispose();
         }
         #endregion
 
+        #endregion
     }
 }

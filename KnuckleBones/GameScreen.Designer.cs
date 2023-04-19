@@ -34,6 +34,7 @@ namespace KnuckleBones
             this.TurnTimer = new System.Windows.Forms.Timer(this.components);
             this.p1score = new System.Windows.Forms.Label();
             this.p2score = new System.Windows.Forms.Label();
+            this.bSkip = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnStart
@@ -68,18 +69,30 @@ namespace KnuckleBones
             this.p2score.TabIndex = 9;
             this.p2score.Text = "Score player 2";
             // 
+            // bSkip
+            // 
+            this.bSkip.Location = new System.Drawing.Point(928, 153);
+            this.bSkip.Name = "bSkip";
+            this.bSkip.Size = new System.Drawing.Size(106, 46);
+            this.bSkip.TabIndex = 10;
+            this.bSkip.Text = "Skip";
+            this.bSkip.UseVisualStyleBackColor = true;
+            this.bSkip.Click += new System.EventHandler(this.bSkip_Click);
+            // 
             // GameScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
             this.ClientSize = new System.Drawing.Size(1175, 752);
+            this.Controls.Add(this.bSkip);
             this.Controls.Add(this.p2score);
             this.Controls.Add(this.p1score);
             this.Controls.Add(this.btnStart);
             this.Name = "GameScreen";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "GameScreen";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.GameScreen_FormClosing);
             this.Load += new System.EventHandler(this.GameScreen_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.GameScreen_Paint);
             this.ResumeLayout(false);
@@ -92,5 +105,6 @@ namespace KnuckleBones
         private System.Windows.Forms.Timer TurnTimer;
         private System.Windows.Forms.Label p1score;
         private System.Windows.Forms.Label p2score;
+        private System.Windows.Forms.Button bSkip;
     }
 }
