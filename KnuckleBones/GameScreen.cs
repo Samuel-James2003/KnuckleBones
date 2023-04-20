@@ -34,7 +34,7 @@ namespace KnuckleBones
             player2 = new Player(col, row, p2Name);
             player2.Offset = offset;
             players.Add(player1);
-            players.Add(player2);
+            players.Add(player2); 
         }
 
         #region Methods
@@ -104,12 +104,12 @@ namespace KnuckleBones
         void IsGameOver()
         {
             if (gameEnded)
-            { 
+            {
                 Close();
                 Dispose(true);
                 Application.Exit();
+                return;
             }
-                
 
             foreach (var player in players)
                 if (player.isFull())
@@ -197,7 +197,6 @@ namespace KnuckleBones
         }
         void WinnerIs(Player player, Color color)
         {
-            gameEnded = true;
             Hide();
             Form form = new WinLoseScreen(player.Score, player.Name, color, this);
             form.Show();
@@ -205,7 +204,6 @@ namespace KnuckleBones
         }
         void Tie()
         {
-            gameEnded = true;
             Hide();
             Form form = new WinLoseScreen(player1.Score, player1.Name + " " + player2.Name, "No", this);
             form.ShowDialog();
@@ -231,6 +229,7 @@ namespace KnuckleBones
         }
         void DrawString(int x, int y, string drawString, Color color)
         {
+
             Graphics formGraphics = CreateGraphics();
             Font drawFont = new Font("Arial", 10);
             SolidBrush drawBrush = new SolidBrush(color);
@@ -241,6 +240,8 @@ namespace KnuckleBones
             drawFont.Dispose();
             drawBrush.Dispose();
             formGraphics.Dispose();
+
+
         }
         void DrawString(int x, int y, int drawString)
         {
@@ -325,17 +326,22 @@ namespace KnuckleBones
         #endregion
 
         #region Gamestates
-        private void GameTurn(object sender, EventArgs e)
+        private void TurnTimer_Tick(object sender, EventArgs e)
         {
-            if (tick1)
-                Turns(player1);
-            else
-                Turns(player2);
+            if (!gameEnded)
+            {
+                if (tick1)
+                    Turns(player1);
+                else
+                    Turns(player2);
 
-            IsGameOver();
-            GameBackGround();
-            ReFill();
-            tick1 = !tick1;
+                IsGameOver();
+
+
+                GameBackGround();
+                ReFill();
+                tick1 = !tick1;
+            }
         }
         void Turns(Player player)
         {
@@ -356,9 +362,11 @@ namespace KnuckleBones
         }
         void GameOver()
         {
-            isAllowed = false;
-            TurnTimer.Enabled = false;
+            isAllowed = TurnTimer.Enabled = false;
+            gameEnded = true;
 
+            //Dispose(true);
+            //Close();
             if (player1.Score > player2.Score)
                 WinnerIs(player1, Color.LightBlue);
 
@@ -425,7 +433,7 @@ namespace KnuckleBones
             player1.AddValue(2, 1);
             player1.AddValue(0, 4);
             player1.AddValue(1, 4);
-            
+
 
             player2.AddValue(1, 1);
             player2.AddValue(2, 1);
