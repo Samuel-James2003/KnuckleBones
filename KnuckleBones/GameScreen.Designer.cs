@@ -31,8 +31,6 @@ namespace KnuckleBones
         {
             this.tbposY = new System.Windows.Forms.Label();
             this.tbposX = new System.Windows.Forms.Label();
-            this.p1score = new System.Windows.Forms.TextBox();
-            this.p2score = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -54,20 +52,6 @@ namespace KnuckleBones
             this.tbposX.TabIndex = 4;
             this.tbposX.Text = "Pos X";
             // 
-            // p1score
-            // 
-            this.p1score.Location = new System.Drawing.Point(994, 268);
-            this.p1score.Name = "p1score";
-            this.p1score.Size = new System.Drawing.Size(151, 26);
-            this.p1score.TabIndex = 5;
-            // 
-            // p2score
-            // 
-            this.p2score.Location = new System.Drawing.Point(994, 321);
-            this.p2score.Name = "p2score";
-            this.p2score.Size = new System.Drawing.Size(151, 26);
-            this.p2score.TabIndex = 6;
-            // 
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(1052, 203);
@@ -85,8 +69,6 @@ namespace KnuckleBones
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
             this.ClientSize = new System.Drawing.Size(1175, 752);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.p2score);
-            this.Controls.Add(this.p1score);
             this.Controls.Add(this.tbposX);
             this.Controls.Add(this.tbposY);
             this.Name = "GameScreen";
@@ -102,8 +84,6 @@ namespace KnuckleBones
         #endregion
         private System.Windows.Forms.Label tbposY;
         private System.Windows.Forms.Label tbposX;
-        private System.Windows.Forms.TextBox p1score;
-        private System.Windows.Forms.TextBox p2score;
         private System.Windows.Forms.Button button1;
     }
 }

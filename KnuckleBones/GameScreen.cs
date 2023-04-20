@@ -86,8 +86,7 @@ namespace KnuckleBones
         void ShowScores()
         {
             string P1 = "Player 1 = " + player1.Score.ToString(), P2 = "Player 2 = " + player2.Score.ToString();
-            p1score.Text = P1;
-            p2score.Text = P2;
+            
         }
         int RandomDice()
         {
@@ -300,6 +299,7 @@ namespace KnuckleBones
                 DrawDicesInRectangle(isOffset, dicelist[i], i);
                 isAllowed = true;
             }
+            Swap();
         }
         void GameOver()
         {
@@ -368,13 +368,37 @@ namespace KnuckleBones
         }
         private void button1_Click(object sender, EventArgs e)
         {
+            button1.Visible = false;
+            //while (true)
+            //{
+            //    foreach (var player in players)
+            //    {
+            //        Turn(player);
+            //        ReFill();
+            //        ShowScores();
+            //        if (player.isFull()) 
+            //            break;
+            //    }
+            //    if (player1.isFull())
+            //        break;
+            //    if (player2.isFull())
+            //        break;
+            //}
+
             foreach (var player in players)
             {
                 Turn(player);
                 ReFill();
                 ShowScores();
-
+                if (player.isFull())
+                    break;
             }
+
+            button1_Click(sender, e);
+            if (player1.isFull())
+                Close();
+            if (player2.isFull())
+                Close();
 
 
         }
