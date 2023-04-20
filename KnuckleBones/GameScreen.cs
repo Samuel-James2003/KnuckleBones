@@ -96,19 +96,20 @@ namespace KnuckleBones
             top = !top;
 
         }
-        void IsGameOver()
+        bool IsGameOver()
         {
             if (gameEnded)
             {
-                Close();
-                Dispose(true);
-                Application.Exit();
-                return;
+                return true;
             }
 
             foreach (var player in players)
                 if (player.isFull())
+                {
                     GameOver();
+                    return true;
+                }
+            return false; 
         }
         private bool AddValueToGameMatrix()
         {
@@ -225,16 +226,16 @@ namespace KnuckleBones
         void DrawString(int x, int y, string drawString, Color color)
         {
 
-            Graphics formGraphics = CreateGraphics();
+            g = CreateGraphics();
             Font drawFont = new Font("Arial", 10);
             SolidBrush drawBrush = new SolidBrush(color);
             StringFormat drawFormat = new StringFormat();
 
-            formGraphics.DrawString(drawString, drawFont, drawBrush, x, y, drawFormat);
+            g.DrawString(drawString, drawFont, drawBrush, x, y, drawFormat);
 
             drawFont.Dispose();
             drawBrush.Dispose();
-            formGraphics.Dispose();
+            g.Dispose();
 
 
         }
@@ -333,13 +334,15 @@ namespace KnuckleBones
                 IsGameOver();
 
 
-                GameBackGround();
                 ReFill();
                 tick1 = !tick1;
             }
+            else
+                Close();
         }
         void Turns(Player player)
         {
+           
             TurnTimer.Enabled = false;
             bool isOffset = true;
             IsGameOver();
@@ -354,6 +357,7 @@ namespace KnuckleBones
             }
             ShowScores();
             IsGameOver();
+           
         }
         void GameOver()
         {
@@ -386,8 +390,6 @@ namespace KnuckleBones
         {
             if (isAllowed)
             {
-                GameBackGround();
-
                 if (keyData == Keys.Left)
                 {
                     HighlightLeft();
@@ -395,7 +397,6 @@ namespace KnuckleBones
                 else if (keyData == Keys.Right)
                 {
                     HighlightRight();
-
                 }
                 else if (keyData == Keys.Enter || keyData == Keys.Space)
                 {
