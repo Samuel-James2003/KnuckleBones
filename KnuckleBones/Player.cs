@@ -20,7 +20,6 @@ namespace KnuckleBones
         public int[,] GameMatrix
         {
             get { return _gameMatrix; }
-            set { _gameMatrix = value; }
         }
 
         public int Score
@@ -31,13 +30,36 @@ namespace KnuckleBones
         public int Offset
         {
             get { return offset; }
-            set { offset = value; }
+        }
+
+        public Player(int columns, int rows)
+        {
+            _gameMatrix = new int[rows, columns];
+            this.rows = rows;
+            this.columns = columns;
+        }
+
+        public Player(int columns, int rows, int offset)
+        {
+            _gameMatrix = new int[rows, columns];
+            this.offset = offset;
+            this.rows = rows;
+            this.columns = columns;
         }
 
         public Player(int columns, int rows, string name)
         {
             _gameMatrix = new int[rows, columns];
             this.name = name;
+            this.rows = rows;
+            this.columns = columns;
+        }
+
+        public Player(int columns, int rows, int offset, string name)
+        {
+            _gameMatrix = new int[rows, columns];
+            this.name = name;
+            this.offset = offset;
             this.rows = rows;
             this.columns = columns;
         }
