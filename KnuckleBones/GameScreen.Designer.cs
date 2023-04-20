@@ -49,7 +49,7 @@ namespace KnuckleBones
             // 
             // TurnTimer
             // 
-            this.TurnTimer.Tick += new System.EventHandler(this.GameTurn);
+            this.TurnTimer.Tick += new System.EventHandler(this.TurnTimer_Tick);
             // 
             // p1score
             // 
