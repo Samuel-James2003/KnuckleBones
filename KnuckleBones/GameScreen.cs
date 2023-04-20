@@ -66,17 +66,13 @@ namespace KnuckleBones
             GameBackGround();
             foreach (Player player in players)
             {
-                for (int i = 0; i < col; i++)
-                    for (int j = 0; j < row; j++)
+                for (int c = 0; c < col; c++)
+                    for (int r = 0; r < row; r++)
                     {
-                        int value = player.GameMatrix[i, j];
-                        if (value > 0 && player.Offset == 0)
+                        int value = player.GameMatrix[r, c], x = c * defWidth, y = r * defHeight ;
+                        if (value > 0)
                         {
-                            DrawStringInRectangle(j * defWidth, i * defHeight, false, value);
-                        }
-                        else if (value > 0 && player.Offset != 0)
-                        {
-                            DrawStringInRectangle(j * defWidth, i * defHeight + offset, false, value);
+                            DrawStringInRectangle(x, y + player.Offset, false, value);
                         }
                     }
             }
