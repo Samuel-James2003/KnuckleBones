@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KnuckleBones
 {
@@ -20,7 +17,6 @@ namespace KnuckleBones
         public int[,] GameMatrix
         {
             get { return _gameMatrix; }
-           
         }
 
         public int Score
@@ -52,6 +48,15 @@ namespace KnuckleBones
         {
             _gameMatrix = new int[rows, columns];
             this.name = name;
+            this.rows = rows;
+            this.columns = columns;
+        }
+
+        public Player(int columns, int rows, int offset, string name)
+        {
+            _gameMatrix = new int[rows, columns];
+            this.name = name;
+            this.offset = offset;
             this.rows = rows;
             this.columns = columns;
         }
