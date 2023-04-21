@@ -356,6 +356,8 @@ namespace KnuckleBones
 
                     if (!AddValueToGameMatrix())
                     {
+                        Swap();
+                        
                         return base.ProcessCmdKey(ref msg, keyData);
                     }
                     waythrough++;
