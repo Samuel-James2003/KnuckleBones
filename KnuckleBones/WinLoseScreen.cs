@@ -8,10 +8,11 @@ namespace KnuckleBones
         bool isTied = false;
         string pName, WinText;
         int score;
+        GameScreen gameScreen;
 
         public WinLoseScreen(int score, string pName, System.Drawing.Color color, GameScreen gameScreen)
         {
-            gameScreen.Dispose();
+            this.gameScreen = gameScreen;
             InitializeComponent();
             this.score = score;
             this.pName = pName;
@@ -20,7 +21,7 @@ namespace KnuckleBones
 
         public WinLoseScreen(int score, string names, string _, GameScreen gameScreen)
         {
-            gameScreen.Dispose();
+            this.gameScreen = gameScreen;
             InitializeComponent();
             this.score = score;
             pName = names;
@@ -30,6 +31,11 @@ namespace KnuckleBones
         private void winnerBox_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void WinLoseScreen_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            gameScreen.Close();
         }
 
         private void WinLoseScreen_Load(object sender, EventArgs e)

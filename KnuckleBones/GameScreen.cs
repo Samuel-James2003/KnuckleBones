@@ -41,40 +41,52 @@ namespace KnuckleBones
         #region Bases
         void ClearScreen()
         {
-            for (int i = 0; i < row; i++)
-                for (int j = 0; j < col; j++)
-                    for (int c = 0; c < 9; c++)
-                    {
-                        DrawStringInRectangle(j * defWidth, i * defHeight, false, c, cFond);
-                        DrawStringInRectangle(j * defWidth, i * defHeight + offset, false, c, cFond);
-                    }
+            if (!gameEnded)
+            {
+                for (int i = 0; i < row; i++)
+                    for (int j = 0; j < col; j++)
+                        for (int c = 0; c < 9; c++)
+                        {
+                            DrawStringInRectangle(j * defWidth, i * defHeight, false, c, cFond);
+                            DrawStringInRectangle(j * defWidth, i * defHeight + offset, false, c, cFond);
+                        }
+            }
+            
         }
         void GameBackGround()
         {
-            g = CreateGraphics();
-            Draw(0, 0, defWidth, defHeight, row, col);
-            Draw(col * defWidth, row * defHeight / 2, defHeight, defHeight, dice, 1);
+            if (!gameEnded)
+            {
+                g = CreateGraphics();
+                Draw(0, 0, defWidth, defHeight, row, col);
+                Draw(col * defWidth, row * defHeight / 2, defHeight, defHeight, dice, 1);
 
-            Draw(0, offset, defWidth, defHeight, row, col);
-            Draw(col * defWidth, offset + row * defHeight / 2, defHeight, defHeight, dice, 1);
-            g.Dispose();
+                Draw(0, offset, defWidth, defHeight, row, col);
+                Draw(col * defWidth, offset + row * defHeight / 2, defHeight, defHeight, dice, 1);
+                g.Dispose();
+            }
+           
         }
         void ReFill()
         {
-            ClearScreen();
-            GameBackGround();
-            foreach (Player player in players)
+            if (!gameEnded)
             {
-                for (int c = 0; c < col; c++)
-                    for (int r = 0; r < row; r++)
-                    {
-                        int value = player.GameMatrix[r, c], x = c * defWidth, y = r * defHeight ;
-                        if (value > 0)
+                ClearScreen();
+                GameBackGround();
+                foreach (Player player in players)
+                {
+                    for (int c = 0; c < col; c++)
+                        for (int r = 0; r < row; r++)
                         {
-                            DrawStringInRectangle(x, y + player.Offset, false, value);
+                            int value = player.GameMatrix[r, c], x = c * defWidth, y = r * defHeight;
+                            if (value > 0)
+                            {
+                                DrawStringInRectangle(x, y + player.Offset, false, value);
+                            }
                         }
-                    }
+                }
             }
+            
 
         }
         void ShowScores()
@@ -100,6 +112,7 @@ namespace KnuckleBones
         {
             if (gameEnded)
             {
+                //Close();
                 return true;
             }
 
@@ -195,16 +208,15 @@ namespace KnuckleBones
         {
             Hide();
             Form form = new WinLoseScreen(player.Score, player.Name, color, this);
-            form.Show();
-            Close();
+            form.ShowDialog();
+            
         }
         void Tie()
         {
             Hide();
             Form form = new WinLoseScreen(player1.Score, player1.Name + " " + player2.Name, "No", this);
             form.ShowDialog();
-            Dispose();
-            Close();
+            
         }
         #endregion
 
@@ -225,18 +237,19 @@ namespace KnuckleBones
         }
         void DrawString(int x, int y, string drawString, Color color)
         {
+            if (!gameEnded)
+            {
+                g = CreateGraphics();
+                Font drawFont = new Font("Arial", 10);
+                SolidBrush drawBrush = new SolidBrush(color);
+                StringFormat drawFormat = new StringFormat();
 
-            g = CreateGraphics();
-            Font drawFont = new Font("Arial", 10);
-            SolidBrush drawBrush = new SolidBrush(color);
-            StringFormat drawFormat = new StringFormat();
+                g.DrawString(drawString, drawFont, drawBrush, x, y, drawFormat);
 
-            g.DrawString(drawString, drawFont, drawBrush, x, y, drawFormat);
-
-            drawFont.Dispose();
-            drawBrush.Dispose();
-            g.Dispose();
-
+                drawFont.Dispose();
+                drawBrush.Dispose();
+                g.Dispose();
+            }
 
         }
         void DrawString(int x, int y, int drawString)
@@ -337,8 +350,8 @@ namespace KnuckleBones
                 ReFill();
                 tick1 = !tick1;
             }
-            else
-                Close();
+            else;
+                //Close();
         }
         void Turns(Player player)
         {
@@ -448,6 +461,8 @@ namespace KnuckleBones
         {
             Dispose();
         }
+
+        
         #endregion
 
         #endregion

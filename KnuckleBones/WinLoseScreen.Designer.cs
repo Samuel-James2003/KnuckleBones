@@ -55,6 +55,7 @@ namespace KnuckleBones
             this.Name = "WinLoseScreen";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "WinLoseScreen";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.WinLoseScreen_FormClosed);
             this.Load += new System.EventHandler(this.WinLoseScreen_Load);
             this.ResumeLayout(false);
 
