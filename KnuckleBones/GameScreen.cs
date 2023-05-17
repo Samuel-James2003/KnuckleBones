@@ -35,8 +35,7 @@ namespace KnuckleBones
             pen = new Pen(Color.Black, 1);
             InitializeComponent();
             player1 = new Player(col, row);
-            player2 = new Player(col, row);
-            player2.Offset = offset;
+            player2 = new Player(col, row, offset);
             players.Add(player1);
             players.Add(player2);
         }
