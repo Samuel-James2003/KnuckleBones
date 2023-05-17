@@ -10,11 +10,16 @@ namespace KnuckleBones
     {
         int[,] _gameMatrix;
         int rows, columns, offset = 0;
+        string name;
+
+        public string Name
+        {
+            get { return name; }
+        }
 
         public int[,] GameMatrix
         {
             get { return _gameMatrix; }
-            set { _gameMatrix = value; }
         }
 
         public int Score
@@ -25,12 +30,36 @@ namespace KnuckleBones
         public int Offset
         {
             get { return offset; }
-            set { offset = value; }
         }
 
         public Player(int columns, int rows)
         {
-            _gameMatrix = new int[columns, rows];
+            _gameMatrix = new int[rows, columns];
+            this.rows = rows;
+            this.columns = columns;
+        }
+
+        public Player(int columns, int rows, int offset)
+        {
+            _gameMatrix = new int[rows, columns];
+            this.offset = offset;
+            this.rows = rows;
+            this.columns = columns;
+        }
+
+        public Player(int columns, int rows, string name)
+        {
+            _gameMatrix = new int[rows, columns];
+            this.name = name;
+            this.rows = rows;
+            this.columns = columns;
+        }
+
+        public Player(int columns, int rows, int offset, string name)
+        {
+            _gameMatrix = new int[rows, columns];
+            this.name = name;
+            this.offset = offset;
             this.rows = rows;
             this.columns = columns;
         }
@@ -60,10 +89,19 @@ namespace KnuckleBones
             int totalValue = 0;
 
             for (int column = 0; column < columns; column++)
-                totalValue += ReColTotal(0, 0, Convert(GameMatrix, column), false);
+                totalValue += ReColTotal(0, 0, Convert(_gameMatrix, column), false);
             return totalValue;
         }
 
+        private int[] Convert(int[,] array, int column)
+        {
+            int[] result = new int[rows];
+            for (int r = 0; r < rows; r++)
+            {
+                result[r] = array[r, column];
+            }
+            return result;
+        }
         private int ReColTotal(int i, int sum, int[] workingCol, bool isADouble)
         {
             if (i == 0)
@@ -109,64 +147,49 @@ namespace KnuckleBones
         #region Public
         public bool isFull(int column)
         {
-            for (int i = 0; i < rows; i++)
+            for (int r = 0; r < rows; r++)
             {
-                if (GameMatrix[column, i] == 0)
+                if (_gameMatrix[r, column] == 0)
                     return false;
             }
             return true;
         }
         public bool isFull()
         {
-            for (int c = 0; c < columns; c++)
+            for (int r = 0; r < rows; r++)
             {
-                for (int i = 0; i < rows; i++)
+                for (int c = 0; c < columns; c++)
                 {
-                    if (GameMatrix[c, i] == 0)
+                    if (_gameMatrix[r, c] == 0)
                         return false;
                 }
             }
             return true;
         }
-        public int[] Convert(int[,] array, int column)
-        {
-            int[] result = new int[rows];
-            for (int i = 0; i < rows; i++)
-            {
-                result[i] = array[i, column];
-            }
-            return result;
-        }
         public void CheckRemove(int column, int value)
         {
-            for (int i = 0; i < rows; i++)
+            for (int r = 0; r < rows; r++)
             {
-                if (GameMatrix[i, column] == value)
-                    GameMatrix[i, column] = 0;
+                if (_gameMatrix[r, column] == value)
+                    _gameMatrix[r, column] = 0;
             }
 
             for (int x = 0; x < rows; x++)
-            {
-                for (int i = 0; i < rows - 1; i++)
-                {
-                    if (GameMatrix[i, column] == 0)
+                for (int r = 0; r < rows - 1; r++)
+                    if (_gameMatrix[r, column] == 0)
                     {
-                        GameMatrix[i, column] = GameMatrix[i + 1, column];
-                        if (i < rows)
-                        {
-                            GameMatrix[i + 1, column] = 0;
-                        }
+                        _gameMatrix[r, column] = _gameMatrix[r + 1, column];
+                        if (r < rows)
+                            _gameMatrix[r + 1, column] = 0;
                     }
-                }
-            }
         }
         public void AddValue(int column, int value)
         {
-            for (int i = 0; i < rows; i++)
+            for (int r = 0; r < rows; r++)
             {
-                if (GameMatrix[i, column] == 0)
+                if (_gameMatrix[r, column] == 0)
                 {
-                    GameMatrix[i, column] = value;
+                    _gameMatrix[r, column] = value;
                     return;
                 }
             }
