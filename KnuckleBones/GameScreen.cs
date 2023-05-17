@@ -112,7 +112,6 @@ namespace KnuckleBones
         {
             if (gameEnded)
             {
-                //Close();
                 return true;
             }
 
@@ -350,8 +349,6 @@ namespace KnuckleBones
                 ReFill();
                 tick1 = !tick1;
             }
-            else;
-                //Close();
         }
         void Turns(Player player)
         {
@@ -377,8 +374,6 @@ namespace KnuckleBones
             isAllowed = TurnTimer.Enabled = false;
             gameEnded = true;
 
-            //Dispose(true);
-            //Close();
             if (player1.Score > player2.Score)
                 WinnerIs(player1, Color.LightBlue);
 

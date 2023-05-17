@@ -93,6 +93,15 @@ namespace KnuckleBones
             return totalValue;
         }
 
+        private int[] Convert(int[,] array, int column)
+        {
+            int[] result = new int[rows];
+            for (int r = 0; r < rows; r++)
+            {
+                result[r] = array[r, column];
+            }
+            return result;
+        }
         private int ReColTotal(int i, int sum, int[] workingCol, bool isADouble)
         {
             if (i == 0)
@@ -157,15 +166,6 @@ namespace KnuckleBones
             }
             return true;
         }
-        public int[] Convert(int[,] array, int column)
-        {
-            int[] result = new int[rows];
-            for (int r = 0; r < rows; r++)
-            {
-                result[r] = array[r, column];
-            }
-            return result;
-        }
         public void CheckRemove(int column, int value)
         {
             for (int r = 0; r < rows; r++)
@@ -179,7 +179,8 @@ namespace KnuckleBones
                     if (_gameMatrix[r, column] == 0)
                     {
                         _gameMatrix[r, column] = _gameMatrix[r + 1, column];
-                        if (r < rows) _gameMatrix[r + 1, column] = 0;
+                        if (r < rows) 
+                            _gameMatrix[r + 1, column] = 0;
                     }
         }
         public void AddValue(int column, int value)
