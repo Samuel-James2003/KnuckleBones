@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-
+using System.IO;
+using System.Linq;
 
 namespace KnuckleBones
 {
@@ -11,10 +12,10 @@ namespace KnuckleBones
         #region Variables
         int col, row, dice, pos = 1, defWidth = 100, defHeight = 30, offset, waythrough = 0;
         int[] dicelist;
-        Player player1, player2;
+        Player player1, player2, currentplayer;
         Color cFond;
         Pen pen;
-        bool top = true, isAllowed = false, tick1 = true, gameEnded = false;
+        bool top = true, isAllowed = false, tick1 = true, gameEnded = false, saveable = false;
         Graphics g;
         List<Player> players = new List<Player>();
         Random random = new Random();
@@ -23,6 +24,7 @@ namespace KnuckleBones
 
         public GameScreen(int numDice, int numCol, int numRow, string p1Name, string p2Name)
         {
+
             dice = numDice;
             col = numCol;
             row = numRow;
@@ -31,9 +33,87 @@ namespace KnuckleBones
             pen = new Pen(Color.Black, 1);
             InitializeComponent();
             player1 = new Player(col, row, p1Name);
-            player2 = new Player(col, row,offset, p2Name);
+            player2 = new Player(col, row, offset, p2Name);
             players.Add(player1);
-            players.Add(player2); 
+            players.Add(player2);
+            currentplayer = player1;
+
+
+        }
+
+
+        public GameScreen(string Filename)
+        {
+
+            string currentplayername = "";
+            using (var sr = new StreamReader(Filename))
+            {
+                currentplayername = sr.ReadLine();
+                dice = int.Parse(sr.ReadLine());
+                col = int.Parse(sr.ReadLine());
+                row = int.Parse(sr.ReadLine());
+                top = bool.Parse(sr.ReadLine());
+                string input = sr.ReadLine();
+                dicelist = new int[dice];
+                for (int i = 0; i < dice; i++)
+                {
+                    dicelist[i] = input[i] - '0';
+                }
+                waythrough = int.Parse(sr.ReadLine());
+                players = new List<Player>();
+                for (int i = 0; i < 2; i++)
+                {
+                    var name = sr.ReadLine();
+                    var offset = int.Parse(sr.ReadLine());
+                    var power = bool.Parse(sr.ReadLine());
+                    var matrix = new int[row, col];
+                    char[] tmplist = sr.ReadLine().ToCharArray();
+                    int f = 0;
+                    for (int r = 0; r < row; r++)
+                        for (int c = 0; c < col; c++)
+                        {
+                            matrix[r, c] = int.Parse(tmplist[f].ToString());
+                            f++;
+                        }
+
+                    players.Add(new Player(col, row, offset, name, matrix)
+                    {
+                        UsedPower = power
+                    });
+                }
+            }
+
+            offset = defHeight * (row + 3);
+            pen = new Pen(Color.Black, 1);
+            InitializeComponent();
+
+            player1 = players[0];
+            player2 = players[1];
+            if (currentplayername == player1.Name)
+            {
+                currentplayer = player1;
+
+                for (int i = 0; i < dice; i++)
+                {
+
+                    DrawDicesInRectangle(false, dicelist[i], i);
+                    isAllowed = true;
+                }
+            }
+            else
+            {
+                currentplayer = player2;
+                for (int i = 0; i < dice; i++)
+                {
+                    DrawDicesInRectangle(true, dicelist[i], i);
+                    isAllowed = true;
+                }
+            }
+            bSkip.Visible = btnStart.Visible = false;
+            ReFill();
+            Turns(currentplayer, dicelist);
+
+
         }
 
         #region Methods
@@ -51,7 +131,7 @@ namespace KnuckleBones
                             DrawStringInRectangle(j * defWidth, i * defHeight + offset, false, c, cFond);
                         }
             }
-            
+
         }
         void GameBackGround()
         {
@@ -65,7 +145,7 @@ namespace KnuckleBones
                 Draw(col * defWidth, offset + row * defHeight / 2, defHeight, defHeight, dice, 1);
                 g.Dispose();
             }
-           
+
         }
         void ReFill()
         {
@@ -84,9 +164,10 @@ namespace KnuckleBones
                                 DrawStringInRectangle(x, y + player.Offset, false, value);
                             }
                         }
+
                 }
             }
-            
+
 
         }
         void ShowScores()
@@ -121,7 +202,7 @@ namespace KnuckleBones
                     GameOver();
                     return true;
                 }
-            return false; 
+            return false;
         }
         private bool AddValueToGameMatrix()
         {
@@ -208,14 +289,14 @@ namespace KnuckleBones
             Hide();
             Form form = new WinLoseScreen(player.Score, player.Name, color, this);
             form.ShowDialog();
-            
+
         }
         void Tie()
         {
             Hide();
             Form form = new WinLoseScreen(player1.Score, player1.Name + " " + player2.Name, "No", this);
             form.ShowDialog();
-            
+
         }
         #endregion
 
@@ -292,6 +373,36 @@ namespace KnuckleBones
 
             DrawString(textX, textY, text);
         }
+
+        private void bCheat_Click(object sender, EventArgs e)
+        {
+            int.TryParse(tbCheat.Text, out int cheatnum);
+            if (!currentplayer.isFull(pos) && cheatnum <= 6 && cheatnum >= 1)
+            {
+                if (currentplayer.Offset > 0)
+                {
+                    EraseDicesInRectangle(false, waythrough);
+                    player2.UsedPower = true;
+                    dicelist[0] = cheatnum;
+
+                }
+                else
+                {
+                    EraseDicesInRectangle(true, waythrough);
+                    player1.UsedPower = true;
+                    dicelist[0] = cheatnum;
+                }
+                var senders = new object();
+
+                var es = new PaintEventArgs(g, new Rectangle());
+                GameScreen_Paint(senders, es);
+                bCheat.Visible = tbCheat.Visible = false;
+            }
+        }
+        private void tbCheat_TextChanged(object sender, EventArgs e)
+        {
+            bCheat.Visible = true;
+        }
         void DrawStringInRectangle(int x, int y, bool isDice, int text, Color color)
         {
             int textY;
@@ -338,24 +449,40 @@ namespace KnuckleBones
         {
             if (!gameEnded)
             {
+                lSave.ForeColor = Color.Black;
                 if (tick1)
+                {
                     Turns(player1);
+
+                    lSave.Text = "Not Saveable";
+                    saveable = false;
+                }
                 else
+                {
                     Turns(player2);
+                    lSave.Text = "Saveable";
+                    saveable = true;
+                }
 
                 IsGameOver();
-
-
                 ReFill();
                 tick1 = !tick1;
+
+
             }
         }
         void Turns(Player player)
         {
-           
+
             TurnTimer.Enabled = false;
             bool isOffset = true;
             IsGameOver();
+            currentplayer = player;
+            if (!player.UsedPower)
+                lPower.Text = $"{player.Name} Turn Power Set";
+            else
+                lPower.Text = $"{player.Name} Turn Power used";
+
             if (player.Offset == 0)
                 isOffset = false;
 
@@ -367,7 +494,30 @@ namespace KnuckleBones
             }
             ShowScores();
             IsGameOver();
-           
+
+        }
+
+        void Turns(Player player, int[] dices)
+        {
+            TurnTimer.Enabled = false;
+            bool isOffset = true;
+            IsGameOver();
+            currentplayer = player;
+            if (!player.UsedPower)
+                lPower.Text = $"{player.Name} Turn Power Set";
+            else
+                lPower.Text = $"{player.Name} Turn Power used";
+
+            if (player.Offset == 0)
+                isOffset = false;
+
+            for (int i = 0; i < dice; i++)
+            {
+                DrawDicesInRectangle(isOffset, dices[i], i);
+                isAllowed = true;
+            }
+            ShowScores();
+            IsGameOver();
         }
         void GameOver()
         {
@@ -393,6 +543,34 @@ namespace KnuckleBones
         private void GameScreen_Paint(object sender, PaintEventArgs e)
         {
             GameBackGround();
+            ReFill();
+            if (currentplayer.Offset > 0)
+            {
+
+                for (int i = 0; i < dice; i++)
+                {
+                    if (dicelist[i] > 0)
+                    {
+                        EraseDicesInRectangle(true, waythrough);
+                        DrawDicesInRectangle(true, dicelist[i], i);
+                    }
+
+                }
+            }
+            if (currentplayer.Offset == 0)
+            {
+                for (int i = 0; i < dice; i++)
+                {
+                    if (dicelist[i] > 0)
+                    {
+                        EraseDicesInRectangle(true, waythrough);
+                        DrawDicesInRectangle(false, dicelist[i], i);
+                    }
+                }
+            }
+
+
+
         }
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
@@ -406,9 +584,44 @@ namespace KnuckleBones
                 {
                     HighlightRight();
                 }
+                else if (keyData == Keys.S && saveable)
+                {
+                    using (var sw = new StreamWriter("Save.txt"))
+                    {
+                        sw.WriteLine($"{currentplayer.Name}\n{dice}\n{col}\n{row}\n{top}");
+                        sw.WriteLine(string.Join("", dicelist));
+                        sw.WriteLine(waythrough);
+                        foreach (var player in players)
+                        {
+                            sw.WriteLine($"{player.Name}\n{player.Offset}\n{player.UsedPower}");
+                            for (int r = 0; r < row; r++)
+                            {
+                                for (int c = 0; c < col; c++)
+                                {
+                                    sw.Write(player.GameMatrix[r, c]);
+                                }
+                            }
+                            sw.WriteLine();
+                        }
+                    }
+                    lSave.Text = "Saved!!";
+                    lSave.ForeColor = Color.DarkGreen;
+                }
+                else if (keyData == Keys.S && !saveable)
+                {
+                    lSave.Text = "NOT SAVEABLE!!!";
+                    lSave.ForeColor = Color.Red;
+                }
+                else if (keyData == Keys.C)
+                {
+                    if (!currentplayer.UsedPower)
+                    {
+                        tbCheat.Visible = true;
+
+                    }
+                }
                 else if (keyData == Keys.Enter || keyData == Keys.Space)
                 {
-
                     if (!AddValueToGameMatrix())
                     {
                         Swap();
@@ -457,7 +670,7 @@ namespace KnuckleBones
             Dispose();
         }
 
-        
+
         #endregion
 
         #endregion

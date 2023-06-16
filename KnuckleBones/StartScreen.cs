@@ -50,6 +50,14 @@ namespace KnuckleBones
             form.ShowDialog();
 
         }
+
+        private void bLoad_Click(object sender, EventArgs e)
+        {
+            Hide();
+            Form form = new GameScreen("Save.txt");
+            form.ShowDialog();
+            Show();
+        }
     }
 }
 

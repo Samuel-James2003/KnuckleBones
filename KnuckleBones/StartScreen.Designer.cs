@@ -35,6 +35,7 @@ namespace KnuckleBones
             this.btnHelp = new System.Windows.Forms.Button();
             this.btnStart = new System.Windows.Forms.Button();
             this.lbTitle = new System.Windows.Forms.Label();
+            this.bLoad = new System.Windows.Forms.Button();
             this.Group.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -65,6 +66,7 @@ namespace KnuckleBones
             // Group
             // 
             this.Group.BackColor = System.Drawing.SystemColors.Control;
+            this.Group.Controls.Add(this.bLoad);
             this.Group.Controls.Add(this.btnHelp);
             this.Group.Controls.Add(this.btnStart);
             this.Group.Controls.Add(this.btnQuit);
@@ -80,9 +82,9 @@ namespace KnuckleBones
             // 
             this.btnHelp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.btnHelp.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.btnHelp.Location = new System.Drawing.Point(388, 90);
+            this.btnHelp.Location = new System.Drawing.Point(388, 119);
             this.btnHelp.Name = "btnHelp";
-            this.btnHelp.Size = new System.Drawing.Size(600, 82);
+            this.btnHelp.Size = new System.Drawing.Size(600, 53);
             this.btnHelp.TabIndex = 4;
             this.btnHelp.Text = "Help";
             this.btnHelp.UseVisualStyleBackColor = false;
@@ -94,7 +96,7 @@ namespace KnuckleBones
             this.btnStart.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnStart.Location = new System.Drawing.Point(388, 22);
             this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(600, 58);
+            this.btnStart.Size = new System.Drawing.Size(600, 46);
             this.btnStart.TabIndex = 2;
             this.btnStart.Text = "Start";
             this.btnStart.UseVisualStyleBackColor = false;
@@ -111,6 +113,18 @@ namespace KnuckleBones
             this.lbTitle.TabIndex = 3;
             this.lbTitle.Text = "Knuckle Bones";
             this.lbTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // bLoad
+            // 
+            this.bLoad.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.bLoad.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.bLoad.Location = new System.Drawing.Point(388, 66);
+            this.bLoad.Name = "bLoad";
+            this.bLoad.Size = new System.Drawing.Size(600, 53);
+            this.bLoad.TabIndex = 5;
+            this.bLoad.Text = "Load";
+            this.bLoad.UseVisualStyleBackColor = false;
+            this.bLoad.Click += new System.EventHandler(this.bLoad_Click);
             // 
             // StartScreen
             // 
@@ -134,6 +148,7 @@ namespace KnuckleBones
         private System.Windows.Forms.Button btnHelp;
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Label lbTitle;
+        private System.Windows.Forms.Button bLoad;
     }
 }
 

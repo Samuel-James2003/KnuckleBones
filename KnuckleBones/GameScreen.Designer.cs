@@ -35,6 +35,11 @@ namespace KnuckleBones
             this.p1score = new System.Windows.Forms.Label();
             this.p2score = new System.Windows.Forms.Label();
             this.bSkip = new System.Windows.Forms.Button();
+            this.LTooltip = new System.Windows.Forms.Label();
+            this.lPower = new System.Windows.Forms.Label();
+            this.tbCheat = new System.Windows.Forms.TextBox();
+            this.bCheat = new System.Windows.Forms.Button();
+            this.lSave = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btnStart
@@ -79,12 +84,63 @@ namespace KnuckleBones
             this.bSkip.UseVisualStyleBackColor = true;
             this.bSkip.Click += new System.EventHandler(this.bSkip_Click);
             // 
+            // LTooltip
+            // 
+            this.LTooltip.AutoSize = true;
+            this.LTooltip.Location = new System.Drawing.Point(879, 240);
+            this.LTooltip.Name = "LTooltip";
+            this.LTooltip.Size = new System.Drawing.Size(284, 60);
+            this.LTooltip.TabIndex = 11;
+            this.LTooltip.Text = "Press the C button to use secret power\r\nThis can only be used once \r\nEnter a valu" +
+    "e between 1-6\r\n";
+            // 
+            // lPower
+            // 
+            this.lPower.AutoSize = true;
+            this.lPower.Location = new System.Drawing.Point(879, 314);
+            this.lPower.Name = "lPower";
+            this.lPower.Size = new System.Drawing.Size(0, 20);
+            this.lPower.TabIndex = 12;
+            // 
+            // tbCheat
+            // 
+            this.tbCheat.Location = new System.Drawing.Point(883, 346);
+            this.tbCheat.Name = "tbCheat";
+            this.tbCheat.Size = new System.Drawing.Size(232, 26);
+            this.tbCheat.TabIndex = 13;
+            this.tbCheat.Visible = false;
+            this.tbCheat.TextChanged += new System.EventHandler(this.tbCheat_TextChanged);
+            // 
+            // bCheat
+            // 
+            this.bCheat.Location = new System.Drawing.Point(883, 378);
+            this.bCheat.Name = "bCheat";
+            this.bCheat.Size = new System.Drawing.Size(232, 83);
+            this.bCheat.TabIndex = 14;
+            this.bCheat.Text = "Press me to add the value";
+            this.bCheat.UseVisualStyleBackColor = true;
+            this.bCheat.Visible = false;
+            this.bCheat.Click += new System.EventHandler(this.bCheat_Click);
+            // 
+            // lSave
+            // 
+            this.lSave.AutoSize = true;
+            this.lSave.Location = new System.Drawing.Point(924, 697);
+            this.lSave.Name = "lSave";
+            this.lSave.Size = new System.Drawing.Size(0, 20);
+            this.lSave.TabIndex = 15;
+            // 
             // GameScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
             this.ClientSize = new System.Drawing.Size(1175, 752);
+            this.Controls.Add(this.lSave);
+            this.Controls.Add(this.bCheat);
+            this.Controls.Add(this.tbCheat);
+            this.Controls.Add(this.lPower);
+            this.Controls.Add(this.LTooltip);
             this.Controls.Add(this.bSkip);
             this.Controls.Add(this.p2score);
             this.Controls.Add(this.p1score);
@@ -106,5 +162,10 @@ namespace KnuckleBones
         private System.Windows.Forms.Label p1score;
         private System.Windows.Forms.Label p2score;
         private System.Windows.Forms.Button bSkip;
+        private System.Windows.Forms.Label LTooltip;
+        private System.Windows.Forms.Label lPower;
+        private System.Windows.Forms.TextBox tbCheat;
+        private System.Windows.Forms.Button bCheat;
+        private System.Windows.Forms.Label lSave;
     }
 }

@@ -11,10 +11,17 @@ namespace KnuckleBones
         int[,] _gameMatrix;
         int rows, columns, offset = 0;
         string name;
+        bool usedPower;
 
         public string Name
         {
             get { return name; }
+        }
+
+        public bool UsedPower
+        {
+            get { return usedPower; }
+            set { usedPower = value; }
         }
 
         public int[,] GameMatrix
@@ -58,6 +65,15 @@ namespace KnuckleBones
         public Player(int columns, int rows, int offset, string name)
         {
             _gameMatrix = new int[rows, columns];
+            this.name = name;
+            this.offset = offset;
+            this.rows = rows;
+            this.columns = columns;
+        }
+
+        public Player(int columns, int rows, int offset, string name, int[,] GameMatrix)
+        {
+            _gameMatrix = GameMatrix;
             this.name = name;
             this.offset = offset;
             this.rows = rows;
