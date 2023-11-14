@@ -9,7 +9,6 @@ namespace KnuckleBones
         public StartScreen()
         {
             InitializeComponent();
-
         }
 
 

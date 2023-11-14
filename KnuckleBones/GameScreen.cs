@@ -41,7 +41,6 @@ namespace KnuckleBones
 
         }
 
-
         public GameScreen(string Filename)
         {
 
