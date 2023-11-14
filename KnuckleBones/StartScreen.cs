@@ -59,7 +59,11 @@ namespace KnuckleBones
         private void bLoad_Click(object sender, EventArgs e)
         {
             Hide();
-            Form form = new GameScreen("Save.txt");
+            GameScreen form;
+            if (Settings.isMultplayer)
+                form = new GameScreen("Save.txt", Settings.isServer, Settings.hostName);
+            else
+                form = new GameScreen("Save.txt");
             form.ShowDialog();
             Show();
         }

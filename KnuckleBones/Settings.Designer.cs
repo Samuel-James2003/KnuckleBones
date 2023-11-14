@@ -249,6 +249,7 @@ namespace KnuckleBones
             this.cbServer.TabIndex = 33;
             this.cbServer.Text = "Server toggle";
             this.cbServer.UseVisualStyleBackColor = true;
+            this.cbServer.CheckedChanged += new System.EventHandler(this.cbServer_CheckedChanged);
             // 
             // cbMultiplayer
             // 

@@ -4,6 +4,11 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Linq;
+using System.Data.Common;
+using System.Net.Sockets;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Text;
 
 namespace KnuckleBones
 {
@@ -19,12 +24,16 @@ namespace KnuckleBones
         Graphics g;
         List<Player> players = new List<Player>();
         Random random = new Random();
-
+        private Socket server = null, client = null;
+        byte[] buffer;
+        int port = 9999;
         #endregion
-
-        public GameScreen(int numDice, int numCol, int numRow, string p1Name, string p2Name)
+        GameScreen()
         {
-
+            buffer = new byte[256];
+        }
+        public GameScreen(int numDice, int numCol, int numRow, string p1Name, string p2Name) : this()
+        {
             dice = numDice;
             col = numCol;
             row = numRow;
@@ -37,23 +46,25 @@ namespace KnuckleBones
             players.Add(player1);
             players.Add(player2);
             currentplayer = player1;
-
-
         }
-       
         public GameScreen(int numDice, int numCol, int numRow,
-            string p1Name, string p2Name, bool isServer, string hostname):this(numDice, numCol, numRow, p1Name,p2Name)
+            string p1Name, string p2Name, bool isServer, string hostname) : this(numDice, numCol, numRow, p1Name, p2Name)
         {
-
-            MessageBox.Show($"This is multiplayer and inherited, the value of isServer is {isServer} and host is {hostname}");
+            if (!isServer)
+                Connecting(hostname);
+            else
+                Listening();
         }
-        public GameScreen(string Filename)
+        public GameScreen(string Filename) : this()
         {
-
             string currentplayername = "";
             using (var sr = new StreamReader(Filename))
             {
-                currentplayername = sr.ReadLine();
+                var tmp = sr.ReadLine();
+                if (!bool.TryParse(tmp, out multiplayer))
+                    currentplayername = tmp;
+                else
+                    currentplayername = sr.ReadLine();
                 dice = int.Parse(sr.ReadLine());
                 col = int.Parse(sr.ReadLine());
                 row = int.Parse(sr.ReadLine());
@@ -80,7 +91,6 @@ namespace KnuckleBones
                             matrix[r, c] = int.Parse(tmplist[f].ToString());
                             f++;
                         }
-
                     players.Add(new Player(col, row, offset, name, matrix)
                     {
                         UsedPower = power
@@ -120,13 +130,103 @@ namespace KnuckleBones
 
 
         }
-        public GameScreen(string Filename, bool isServer, string hostname):this(Filename)
+        public GameScreen(string Filename, bool isServer, string hostname) : this(Filename)
         {
-
+            if (!isServer)
+                Connecting(hostname);
+            else
+                Listening();
         }
         #region Methods
 
         #region Bases
+        private void Listening()
+        {
+            client = null;
+            var serverIP = ValidIP(Dns.GetHostName());
+            server =
+                new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            server.Bind(new IPEndPoint(serverIP, port));
+            server.Listen(1);
+            server.BeginAccept(new AsyncCallback(OnConnectionRequest), server);
+        }
+        private void Connecting(string hostname)
+        {
+            client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            client.Blocking = false;
+            var serverIP = ValidIP(hostname);
+            client.BeginConnect(new IPEndPoint(serverIP, port),
+                new AsyncCallback(OnConnection), client);
+        }
+        private void OnConnectionRequest(IAsyncResult ar)
+        {
+            var stmp = (Socket)ar.AsyncState;
+            client = stmp.EndAccept(ar);
+            client.Send(Encoding.Unicode.GetBytes(((IPEndPoint)client.RemoteEndPoint).Address.ToString() + "Connected"));
+            InitReception(client);
+        }
+        private void Receive(IAsyncResult ar)
+        {
+            if (client != null)
+            {
+                var stmp = (Socket)ar.AsyncState;
+                if (stmp.EndReceive(ar) > 0)
+                //Message
+                {
+                    var message = (Encoding.Unicode.GetString(buffer));
+                    InitReception(stmp);
+                }
+                else
+                //No message
+                {
+                    stmp.Disconnect(true);
+                    stmp.Close();
+                    if (server != null)
+                        server.BeginAccept(new AsyncCallback(OnConnectionRequest), server);
+                    client = null;
+                }
+            }
+        }
+        private void InitReception(Socket client)
+        {
+
+            for (int i = 0; i < buffer.Length; i++)
+                buffer[i] = 0;
+            buffer.Initialize();
+            client.BeginReceive(buffer, 0, buffer.Length,
+                SocketFlags.None, new AsyncCallback(Receive), client);
+        }
+        private void OnConnection(IAsyncResult ar)
+        {
+            var stmp = (Socket)ar.AsyncState;
+            if (stmp.Connected)
+                InitReception(stmp);
+            else
+                MessageBox.Show("Server inaccessible");
+        }
+        private IPAddress ValidIP(string nPC)
+        {
+            IPAddress ipRes = null;
+            if (nPC.Length > 0)
+            {
+                var SeverIP = Dns.GetHostEntry(nPC).AddressList;
+                foreach (IPAddress ip in SeverIP)
+                {
+                    var ping = new Ping();
+                    var reply = ping.Send(ip);
+                    if (reply.Status == IPStatus.Success)
+                        if (ip.AddressFamily == AddressFamily.InterNetwork)
+                        {
+                            ipRes = ip;
+                            break;
+                        }
+                }
+
+            }
+            else
+                MessageBox.Show("Please add text to the server textbox");
+            return ipRes;
+        }
         void ClearScreen()
         {
             if (!gameEnded)
@@ -593,6 +693,7 @@ namespace KnuckleBones
                 {
                     using (var sw = new StreamWriter("Save.txt"))
                     {
+                        sw.WriteLine(multiplayer);
                         sw.WriteLine($"{currentplayer.Name}\n{dice}\n{col}\n{row}\n{top}");
                         sw.WriteLine(string.Join("", dicelist));
                         sw.WriteLine(waythrough);
@@ -672,10 +773,33 @@ namespace KnuckleBones
         }
         private void GameScreen_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (!multiplayer)
+            {
+                Dispose();
+                return;
+            }
+            if (server == null)
+            {
+                client.Send(Encoding.Unicode.GetBytes("Disconnection (client)"));
+                client.Shutdown(SocketShutdown.Both);
+                client.BeginDisconnect(false, new AsyncCallback(OnDisonnectionRequest), client);
+               
+            }
+            else if (client == null)
+            {
+                server.Close();
+                server = null;
+
+            }
+
+
             Dispose();
         }
-
-
+        private void OnDisonnectionRequest(IAsyncResult ar)
+        {
+            var stmp = (Socket)ar.AsyncState;
+            stmp.EndDisconnect(ar);
+        }
         #endregion
 
         #endregion

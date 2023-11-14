@@ -80,5 +80,11 @@ namespace KnuckleBones
         {
             lRow.Text = $"Row = {tbRow.Value}";
         }
+
+        private void cbServer_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cbServer.Checked)
+                cbMultiplayer.Checked = true;
+        }
     }
 }
