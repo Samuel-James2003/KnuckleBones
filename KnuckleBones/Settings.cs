@@ -11,6 +11,9 @@ namespace KnuckleBones
         static public int dice { get; set; } = 1;
         static public string p1Name { get; set; } = "Player1";
         static public string p2Name { get; set; } = "Player2";
+        static public string hostName { get; set; } = "Samuel";
+        static public bool isServer { get; set; }
+        static public bool isMultplayer { get; set; }
 
         private void btnDef_Click(object sender, EventArgs e)
         {
@@ -25,6 +28,7 @@ namespace KnuckleBones
             Defaults();
             tbPName1.Text = p1Name;
             tbPName2.Text = p2Name;
+            tbHostName.Text = hostName;
             lRow.Text = $"Row = {tbRow.Value}";
             lDice.Text = $"Dice = {tbDice.Value}";
             lCol.Text = $"Column = {tbCol.Value}";
@@ -35,9 +39,12 @@ namespace KnuckleBones
         {
             p1Name = tbPName1.Text;
             p2Name = tbPName2.Text;
+            isServer = cbServer.Checked;
+            isMultplayer = cbMultiplayer.Checked;
             col = tbCol.Value;
             row = tbRow.Value;
             dice = tbDice.Value;
+
             if (col != 3 || row != 3 || dice != 1)
             {
                 IsRuinningGame = true;

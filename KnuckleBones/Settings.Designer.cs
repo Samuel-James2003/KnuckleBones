@@ -35,6 +35,8 @@ namespace KnuckleBones
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.lMultiplayerSection = new System.Windows.Forms.Label();
+            this.tbHostName = new System.Windows.Forms.TextBox();
             this.lNames = new System.Windows.Forms.Label();
             this.tbPName2 = new System.Windows.Forms.TextBox();
             this.tbPName1 = new System.Windows.Forms.TextBox();
@@ -44,6 +46,9 @@ namespace KnuckleBones
             this.tbRow = new System.Windows.Forms.TrackBar();
             this.tbCol = new System.Windows.Forms.TrackBar();
             this.tbDice = new System.Windows.Forms.TrackBar();
+            this.cbServer = new System.Windows.Forms.CheckBox();
+            this.cbMultiplayer = new System.Windows.Forms.CheckBox();
+            this.lHostName = new System.Windows.Forms.Label();
             this.Buttons.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -79,7 +84,7 @@ namespace KnuckleBones
             this.Buttons.Controls.Add(this.btnDone);
             this.Buttons.Controls.Add(this.btnDef);
             this.Buttons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.Buttons.Location = new System.Drawing.Point(0, 650);
+            this.Buttons.Location = new System.Drawing.Point(0, 686);
             this.Buttons.Name = "Buttons";
             this.Buttons.Size = new System.Drawing.Size(717, 80);
             this.Buttons.TabIndex = 9;
@@ -110,6 +115,11 @@ namespace KnuckleBones
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.lHostName);
+            this.groupBox2.Controls.Add(this.cbMultiplayer);
+            this.groupBox2.Controls.Add(this.cbServer);
+            this.groupBox2.Controls.Add(this.lMultiplayerSection);
+            this.groupBox2.Controls.Add(this.tbHostName);
             this.groupBox2.Controls.Add(this.lNames);
             this.groupBox2.Controls.Add(this.tbPName2);
             this.groupBox2.Controls.Add(this.tbPName1);
@@ -122,23 +132,40 @@ namespace KnuckleBones
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(0, 72);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(717, 578);
+            this.groupBox2.Size = new System.Drawing.Size(717, 614);
             this.groupBox2.TabIndex = 24;
             this.groupBox2.TabStop = false;
+            // 
+            // lMultiplayerSection
+            // 
+            this.lMultiplayerSection.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lMultiplayerSection.Location = new System.Drawing.Point(497, 464);
+            this.lMultiplayerSection.Name = "lMultiplayerSection";
+            this.lMultiplayerSection.Size = new System.Drawing.Size(217, 29);
+            this.lMultiplayerSection.TabIndex = 32;
+            this.lMultiplayerSection.Text = "Multiplayer";
+            this.lMultiplayerSection.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // tbHostName
+            // 
+            this.tbHostName.Location = new System.Drawing.Point(491, 552);
+            this.tbHostName.Name = "tbHostName";
+            this.tbHostName.Size = new System.Drawing.Size(220, 26);
+            this.tbHostName.TabIndex = 31;
             // 
             // lNames
             // 
             this.lNames.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lNames.Location = new System.Drawing.Point(3, 477);
             this.lNames.Name = "lNames";
-            this.lNames.Size = new System.Drawing.Size(711, 29);
+            this.lNames.Size = new System.Drawing.Size(220, 29);
             this.lNames.TabIndex = 30;
             this.lNames.Text = "Player Names";
             this.lNames.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // tbPName2
             // 
-            this.tbPName2.Location = new System.Drawing.Point(497, 526);
+            this.tbPName2.Location = new System.Drawing.Point(0, 558);
             this.tbPName2.Name = "tbPName2";
             this.tbPName2.Size = new System.Drawing.Size(220, 26);
             this.tbPName2.TabIndex = 29;
@@ -213,11 +240,41 @@ namespace KnuckleBones
             this.tbDice.Value = 1;
             this.tbDice.ValueChanged += new System.EventHandler(this.tbDice_ValueChanged);
             // 
+            // cbServer
+            // 
+            this.cbServer.AutoSize = true;
+            this.cbServer.Location = new System.Drawing.Point(494, 584);
+            this.cbServer.Name = "cbServer";
+            this.cbServer.Size = new System.Drawing.Size(129, 24);
+            this.cbServer.TabIndex = 33;
+            this.cbServer.Text = "Server toggle";
+            this.cbServer.UseVisualStyleBackColor = true;
+            // 
+            // cbMultiplayer
+            // 
+            this.cbMultiplayer.AutoSize = true;
+            this.cbMultiplayer.Location = new System.Drawing.Point(494, 496);
+            this.cbMultiplayer.Name = "cbMultiplayer";
+            this.cbMultiplayer.Size = new System.Drawing.Size(110, 24);
+            this.cbMultiplayer.TabIndex = 34;
+            this.cbMultiplayer.Text = "Multiplayer";
+            this.cbMultiplayer.UseVisualStyleBackColor = true;
+            // 
+            // lHostName
+            // 
+            this.lHostName.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lHostName.Location = new System.Drawing.Point(494, 520);
+            this.lHostName.Name = "lHostName";
+            this.lHostName.Size = new System.Drawing.Size(217, 29);
+            this.lHostName.TabIndex = 35;
+            this.lHostName.Text = "Host Name";
+            this.lHostName.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(717, 730);
+            this.ClientSize = new System.Drawing.Size(717, 766);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.Buttons);
@@ -252,5 +309,10 @@ namespace KnuckleBones
         private System.Windows.Forms.Label lNames;
         private System.Windows.Forms.TextBox tbPName2;
         private System.Windows.Forms.TextBox tbPName1;
+        private System.Windows.Forms.Label lMultiplayerSection;
+        private System.Windows.Forms.TextBox tbHostName;
+        private System.Windows.Forms.CheckBox cbServer;
+        private System.Windows.Forms.Label lHostName;
+        private System.Windows.Forms.CheckBox cbMultiplayer;
     }
 }

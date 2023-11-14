@@ -15,8 +15,14 @@ namespace KnuckleBones
         private void btnStart_Click(object sender, EventArgs e)
         {
             Hide();
-            Form form = new GameScreen(Settings.dice, Settings.col, Settings.row, Settings.p1Name, Settings.p2Name);
-            form.ShowDialog();
+            GameScreen form;
+            if (Settings.isMultplayer)
+                form = new GameScreen(Settings.dice, Settings.col, Settings.row,
+                    Settings.p1Name, Settings.p2Name, Settings.isServer, Settings.hostName);
+            else
+                form = new GameScreen(Settings.dice, Settings.col, Settings.row,
+                     Settings.p1Name, Settings.p2Name);
+             form.ShowDialog();
             Show();
         }
 
