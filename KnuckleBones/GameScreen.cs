@@ -15,7 +15,7 @@ namespace KnuckleBones
         Player player1, player2, currentplayer;
         Color cFond;
         Pen pen;
-        bool top = true, isAllowed = false, tick1 = true, gameEnded = false, saveable = false;
+        bool top = true, isAllowed = false, tick1 = true, gameEnded = false, saveable = false, multiplayer = false;
         Graphics g;
         List<Player> players = new List<Player>();
         Random random = new Random();
@@ -40,7 +40,13 @@ namespace KnuckleBones
 
 
         }
+       
+        public GameScreen(int numDice, int numCol, int numRow,
+            string p1Name, string p2Name, bool isServer, string hostname):this(numDice, numCol, numRow, p1Name,p2Name)
+        {
 
+            MessageBox.Show($"This is multiplayer and inherited, the value of isServer is {isServer} and host is {hostname}");
+        }
         public GameScreen(string Filename)
         {
 
@@ -114,7 +120,10 @@ namespace KnuckleBones
 
 
         }
+        public GameScreen(string Filename, bool isServer, string hostname):this(Filename)
+        {
 
+        }
         #region Methods
 
         #region Bases
@@ -452,7 +461,6 @@ namespace KnuckleBones
                 if (tick1)
                 {
                     Turns(player1);
-
                     lSave.Text = "Not Saveable";
                     saveable = false;
                 }
@@ -466,8 +474,6 @@ namespace KnuckleBones
                 IsGameOver();
                 ReFill();
                 tick1 = !tick1;
-
-
             }
         }
         void Turns(Player player)
