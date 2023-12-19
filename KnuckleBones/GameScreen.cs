@@ -21,7 +21,7 @@ namespace KnuckleBones
         Player player1, player2, currentplayer;
         Color cFond;
         Pen pen;
-        bool top = true, isAllowed = false, tick1 = true, gameEnded = false, saveable = false, multiplayer = false, nextplayerplayed = false;
+        bool top = true, isAllowed = false, tick1 = true, gameEnded = false, saveable = false, multiplayer = false;
         Graphics g;
         List<Player> players = new List<Player>();
         Random random = new Random();
@@ -321,8 +321,16 @@ namespace KnuckleBones
         {
             return random.Next(1, 7);
         }
-        void Swap()
+        void Swap(bool multiplayer)
         {
+            if (multiplayer)
+            {
+                ReFill();
+                waythrough = 0;
+                dicelist.Initialize();
+                pos = 1;
+                return;
+            }
             ReFill();
             waythrough = 0;
             dicelist.Initialize();
@@ -420,13 +428,13 @@ namespace KnuckleBones
                     player2.CheckRemove(position, value);
                     player1.UsedPower = usedPower;
                 }
-                nextplayerplayed = true;
-
+                TurnTimer_Tick(new object(), new EventArgs());
+                isAllowed = true;
+                ShowScores();
+                ReFill();
             }
-            catch (Exception e)
-            {
-
-            }
+            catch (Exception)
+            { }
         }
         private void HighlightRight()
         {
@@ -560,7 +568,6 @@ namespace KnuckleBones
 
             DrawString(textX, textY, text);
         }
-
         private void bCheat_Click(object sender, EventArgs e)
         {
             int.TryParse(tbCheat.Text, out int cheatnum);
@@ -631,7 +638,7 @@ namespace KnuckleBones
         }
         #endregion
         #region Gamestates
-        private async void TurnTimer_Tick(object sender, EventArgs e)
+        private void TurnTimer_Tick(object sender, EventArgs e)
         {
             if (!gameEnded)
             {
@@ -639,29 +646,38 @@ namespace KnuckleBones
                 if (multiplayer)
                 {
                     isAllowed = false;
-                    if (server == null && tick1)
-                    //Client turn
+                    if (server == null)
+                    //Client
                     {
                         top = true;
-                        isAllowed = true;
                         lSave.Text = "Not Saveable";
                         saveable = false;
-                        MultiplayerTurns(player1);
+                        if(tick1)
+                        { 
+                            MultiplayerTurns(player1, true);
+                        }
+                        else
+                        {
+                            MultiplayerTurns(player1, false);
+                        }
 
                     }
-                    else if (server != null && !tick1)
-                    //Server turn
+                    else if (server != null)
+                    //Server
                     {
                         top = false;
-                        isAllowed = true;
                         lSave.Text = "Saveable";
                         saveable = true;
-                        MultiplayerTurns(player2);
+                        if (tick1)
+                        {
+                            MultiplayerTurns(player2, true);
+                        }
+                        else
+                        {
+                            MultiplayerTurns(player2, false);
+                        }
                     }
-                    if (nextplayerplayed)
-                    {
-                        isAllowed = true;
-                    }
+                    
 
 
                     IsGameOver();
@@ -712,7 +728,7 @@ namespace KnuckleBones
             IsGameOver();
 
         }
-        void MultiplayerTurns(Player player)
+        void MultiplayerTurns(Player player, bool allowance)
         {
 
             TurnTimer.Enabled = false;
@@ -732,7 +748,7 @@ namespace KnuckleBones
             {
                 dicelist[i] = RandomDice();
                 DrawDicesInRectangle(isOffset, dicelist[i], i);
-                isAllowed = true;
+                isAllowed = allowance;
             }
 
             ShowScores();
@@ -865,8 +881,8 @@ namespace KnuckleBones
                 {
                     if (!AddValueToGameMatrix())
                     {
-                        Swap();
-                        TurnTimer.Enabled = true;
+                        Swap(multiplayer);
+                        //TurnTimer_Tick(new object(), new EventArgs());
                         return base.ProcessCmdKey(ref msg, keyData);
                     }
                     waythrough++;
@@ -908,25 +924,30 @@ namespace KnuckleBones
         }
         private void GameScreen_FormClosing(object sender, FormClosingEventArgs e)
         {
-
             if (!multiplayer)
             {
                 Dispose();
                 return;
             }
-            if (server == null)
+            try
             {
-                client.Send(Encoding.Unicode.GetBytes("Disconnection (client)"));
-                client.Shutdown(SocketShutdown.Both);
-                client.BeginDisconnect(false, new AsyncCallback(OnDisonnectionRequest), client);
 
+                if (server == null)
+                {
+                    client.Send(Encoding.Unicode.GetBytes("Disconnection (client)"));
+                    client.Shutdown(SocketShutdown.Both);
+                    client.BeginDisconnect(false, new AsyncCallback(OnDisonnectionRequest), client);
+
+                }
+                else if (client == null)
+                {
+                    server.Close();
+                    server = null;
+                }
+                Dispose();
             }
-            else if (client == null)
-            {
-                server.Close();
-                server = null;
-            }
-            Dispose();
+            catch (Exception)
+            { return; }
         }
         private void OnDisonnectionRequest(IAsyncResult ar)
         {
