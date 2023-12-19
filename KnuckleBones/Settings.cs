@@ -26,6 +26,8 @@ namespace KnuckleBones
         {
             InitializeComponent();
             Defaults();
+            cbMultiplayer.Checked = isMultplayer;
+            cbServer.Checked = isServer;
             tbPName1.Text = p1Name;
             tbPName2.Text = p2Name;
             tbHostName.Text = hostName;
@@ -85,6 +87,12 @@ namespace KnuckleBones
         {
             if (cbServer.Checked)
                 cbMultiplayer.Checked = true;
+        }
+
+        private void cbMultiplayer_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!cbMultiplayer.Checked)
+                cbServer.Checked = false;
         }
     }
 }

@@ -11,7 +11,6 @@ namespace KnuckleBones
             InitializeComponent();
         }
 
-
         private void btnStart_Click(object sender, EventArgs e)
         {
             Hide();
@@ -52,7 +51,16 @@ namespace KnuckleBones
         private void btnSetting_Click(object sender, EventArgs e)
         {
             Form form = new Settings();
+            lbTitle.Text = "Knuckle Bones";
             form.ShowDialog();
+            if (Settings.isMultplayer)
+            {
+                lbTitle.Text += " Onlineeeee";
+                if (Settings.isServer)
+                    lbTitle.Text += " as a server";
+                else
+                    lbTitle.Text += " as a client";
+            }
 
         }
 
@@ -61,9 +69,9 @@ namespace KnuckleBones
             Hide();
             GameScreen form;
             if (Settings.isMultplayer)
-                form = new GameScreen("Save.txt", Settings.isServer, Settings.hostName);
+                form = new GameScreen("Save.txt", Settings.isServer, Settings.hostName, Settings.isMultplayer);
             else
-                form = new GameScreen("Save.txt");
+                form = new GameScreen("Save.txt", Settings.isMultplayer);
             form.ShowDialog();
             Show();
         }

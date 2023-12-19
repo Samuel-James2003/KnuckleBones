@@ -260,6 +260,7 @@ namespace KnuckleBones
             this.cbMultiplayer.TabIndex = 34;
             this.cbMultiplayer.Text = "Multiplayer";
             this.cbMultiplayer.UseVisualStyleBackColor = true;
+            this.cbMultiplayer.CheckedChanged += new System.EventHandler(this.cbMultiplayer_CheckedChanged);
             // 
             // lHostName
             // 

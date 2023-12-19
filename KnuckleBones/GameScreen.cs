@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Text;
+using System.Threading;
 
 namespace KnuckleBones
 {
@@ -20,7 +21,7 @@ namespace KnuckleBones
         Player player1, player2, currentplayer;
         Color cFond;
         Pen pen;
-        bool top = true, isAllowed = false, tick1 = true, gameEnded = false, saveable = false, multiplayer = false;
+        bool top = true, isAllowed = false, tick1 = true, gameEnded = false, saveable = false, multiplayer = false, nextplayerplayed = false;
         Graphics g;
         List<Player> players = new List<Player>();
         Random random = new Random();
@@ -50,12 +51,19 @@ namespace KnuckleBones
         public GameScreen(int numDice, int numCol, int numRow,
             string p1Name, string p2Name, bool isServer, string hostname) : this(numDice, numCol, numRow, p1Name, p2Name)
         {
+            multiplayer = true;
             if (!isServer)
+            {
+                Text += " Client " + player1.Name;
                 Connecting(hostname);
+            }
             else
+            {
+                Text += " Server " + player2.Name;
                 Listening();
+            }
         }
-        public GameScreen(string Filename) : this()
+        public GameScreen(string Filename, bool isMultiplayer) : this()
         {
             string currentplayername = "";
             using (var sr = new StreamReader(Filename))
@@ -126,19 +134,26 @@ namespace KnuckleBones
             }
             bSkip.Visible = btnStart.Visible = false;
             ReFill();
-            Turns(currentplayer, dicelist);
-
+            if (!isMultiplayer)
+                Turns(currentplayer, dicelist);
 
         }
-        public GameScreen(string Filename, bool isServer, string hostname) : this(Filename)
+        public GameScreen(string Filename, bool isServer, string hostname, bool isMultiplayer) : this(Filename, isMultiplayer)
         {
+            multiplayer = true;
             if (!isServer)
+            {
+                Text += " Client";
                 Connecting(hostname);
+            }
             else
+            {
+                Text += " Server";
                 Listening();
+                Turns(currentplayer, dicelist);
+            }
         }
         #region Methods
-
         #region Bases
         private void Listening()
         {
@@ -160,31 +175,49 @@ namespace KnuckleBones
         }
         private void OnConnectionRequest(IAsyncResult ar)
         {
-            var stmp = (Socket)ar.AsyncState;
-            client = stmp.EndAccept(ar);
-            client.Send(Encoding.Unicode.GetBytes(((IPEndPoint)client.RemoteEndPoint).Address.ToString() + "Connected"));
-            InitReception(client);
+            try
+            {
+                var stmp = (Socket)ar.AsyncState;
+                client = stmp.EndAccept(ar);
+                client.Send(Encoding.Unicode.GetBytes(((IPEndPoint)client.RemoteEndPoint).Address.ToString() + "Connected"));
+                InitReception(client);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Disposed");
+                Close();
+            }
+
         }
         private void Receive(IAsyncResult ar)
         {
-            if (client != null)
+            try
             {
-                var stmp = (Socket)ar.AsyncState;
-                if (stmp.EndReceive(ar) > 0)
-                //Message
+                if (client != null)
                 {
-                    var message = (Encoding.Unicode.GetString(buffer));
-                    InitReception(stmp);
+                    var stmp = (Socket)ar.AsyncState;
+                    if (stmp.EndReceive(ar) > 0)
+                    //Message
+                    {
+                        var message = Encoding.Unicode.GetString(buffer);
+                        HandleData(message);
+                        InitReception(stmp);
+                    }
+                    else
+                    //No message
+                    {
+                        stmp.Disconnect(true);
+                        stmp.Close();
+                        if (server != null)
+                            server.BeginAccept(new AsyncCallback(OnConnectionRequest), server);
+                        client = null;
+                    }
                 }
-                else
-                //No message
-                {
-                    stmp.Disconnect(true);
-                    stmp.Close();
-                    if (server != null)
-                        server.BeginAccept(new AsyncCallback(OnConnectionRequest), server);
-                    client = null;
-                }
+            }
+            catch (Exception)
+            {
+
+                MessageBox.Show("Connection Ended unexpextedly");
             }
         }
         private void InitReception(Socket client)
@@ -321,6 +354,8 @@ namespace KnuckleBones
                     HighlightColumn(pos, 0, 0, defWidth, defHeight, row, cFond);
                     player1.AddValue(pos, dicelist[waythrough]);
                     player2.CheckRemove(pos, dicelist[waythrough]);
+                    if (multiplayer)
+                        SendData(pos, dicelist[waythrough], player1.UsedPower);
                     EmptyDicelist(false);
                     IsGameOver();
                 }
@@ -334,6 +369,8 @@ namespace KnuckleBones
                     HighlightColumn(pos, 0, offset, defWidth, defHeight, row, cFond);
                     player2.AddValue(pos, dicelist[waythrough]);
                     player1.CheckRemove(pos, dicelist[waythrough]);
+                    if (multiplayer)
+                        SendData(pos, dicelist[waythrough], player1.UsedPower);
                     EmptyDicelist(true);
                     IsGameOver();
                 }
@@ -347,6 +384,49 @@ namespace KnuckleBones
                 return false;
             }
             return true;
+        }
+        private void SendData(int pos, int value, bool usedPower)
+        {
+            if (server == null)
+            //client
+            {
+                client.Send(Encoding.Unicode.GetBytes(value.ToString() + "," + pos.ToString() + "," + usedPower.ToString()));
+            }
+            else
+            //server
+            {
+                client.Send(Encoding.Unicode.GetBytes(value.ToString() + "," + pos.ToString() + "," + usedPower.ToString()));
+            }
+        }
+        void HandleData(string message)
+        {
+            try
+            {
+                var parts = message.Split(',');
+                int value = int.Parse(parts[0]);
+                int position = int.Parse(parts[1]);
+                bool usedPower = bool.Parse(parts[2]);
+                if (server == null)
+                //server
+                {
+                    player2.AddValue(position, value);
+                    player1.CheckRemove(position, value);
+                    player2.UsedPower = usedPower;
+                }
+                else
+                //client
+                {
+                    player1.AddValue(position, value);
+                    player2.CheckRemove(position, value);
+                    player1.UsedPower = usedPower;
+                }
+                nextplayerplayed = true;
+
+            }
+            catch (Exception e)
+            {
+
+            }
         }
         private void HighlightRight()
         {
@@ -407,7 +487,6 @@ namespace KnuckleBones
 
         }
         #endregion
-
         #region Drawings
         void Draw(int startX, int startY, int rectangleWidth, int rectangleHeight, int rows, int colmns)
         {
@@ -551,13 +630,45 @@ namespace KnuckleBones
 
         }
         #endregion
-
         #region Gamestates
-        private void TurnTimer_Tick(object sender, EventArgs e)
+        private async void TurnTimer_Tick(object sender, EventArgs e)
         {
             if (!gameEnded)
             {
                 lSave.ForeColor = Color.Black;
+                if (multiplayer)
+                {
+                    isAllowed = false;
+                    if (server == null && tick1)
+                    //Client turn
+                    {
+                        top = true;
+                        isAllowed = true;
+                        lSave.Text = "Not Saveable";
+                        saveable = false;
+                        MultiplayerTurns(player1);
+
+                    }
+                    else if (server != null && !tick1)
+                    //Server turn
+                    {
+                        top = false;
+                        isAllowed = true;
+                        lSave.Text = "Saveable";
+                        saveable = true;
+                        MultiplayerTurns(player2);
+                    }
+                    if (nextplayerplayed)
+                    {
+                        isAllowed = true;
+                    }
+
+
+                    IsGameOver();
+                    ReFill();
+                    tick1 = !tick1;
+                    return;
+                }
                 if (tick1)
                 {
                     Turns(player1);
@@ -601,7 +712,33 @@ namespace KnuckleBones
             IsGameOver();
 
         }
+        void MultiplayerTurns(Player player)
+        {
 
+            TurnTimer.Enabled = false;
+            bool isOffset = true;
+            IsGameOver();
+
+            currentplayer = player;
+            if (!player.UsedPower)
+                lPower.Text = $"{player.Name} Turn Power Set";
+            else
+                lPower.Text = $"{player.Name} Turn Power used";
+
+            if (player.Offset == 0)
+                isOffset = false;
+
+            for (int i = 0; i < dice; i++)
+            {
+                dicelist[i] = RandomDice();
+                DrawDicesInRectangle(isOffset, dicelist[i], i);
+                isAllowed = true;
+            }
+
+            ShowScores();
+            IsGameOver();
+
+        }
         void Turns(Player player, int[] dices)
         {
             TurnTimer.Enabled = false;
@@ -639,7 +776,6 @@ namespace KnuckleBones
                 WinnerIs(player2, Color.Pink);
         }
         #endregion
-
         #region Events
         private void GameScreen_Load(object sender, EventArgs e)
         {
@@ -723,7 +859,6 @@ namespace KnuckleBones
                     if (!currentplayer.UsedPower)
                     {
                         tbCheat.Visible = true;
-
                     }
                 }
                 else if (keyData == Keys.Enter || keyData == Keys.Space)
@@ -773,6 +908,7 @@ namespace KnuckleBones
         }
         private void GameScreen_FormClosing(object sender, FormClosingEventArgs e)
         {
+
             if (!multiplayer)
             {
                 Dispose();
@@ -783,16 +919,13 @@ namespace KnuckleBones
                 client.Send(Encoding.Unicode.GetBytes("Disconnection (client)"));
                 client.Shutdown(SocketShutdown.Both);
                 client.BeginDisconnect(false, new AsyncCallback(OnDisonnectionRequest), client);
-               
+
             }
             else if (client == null)
             {
                 server.Close();
                 server = null;
-
             }
-
-
             Dispose();
         }
         private void OnDisonnectionRequest(IAsyncResult ar)
@@ -801,7 +934,6 @@ namespace KnuckleBones
             stmp.EndDisconnect(ar);
         }
         #endregion
-
         #endregion
     }
 }
