@@ -51,7 +51,6 @@ namespace KnuckleBones
         public GameScreen(int numDice, int numCol, int numRow,
             string p1Name, string p2Name, bool isServer, string hostname) : this(numDice, numCol, numRow, p1Name, p2Name)
         {
-            //TODO: If player 2 is allowed is false by defualt
             multiplayer = true;
             if (!isServer)
             {
@@ -61,13 +60,13 @@ namespace KnuckleBones
             }
             else
             {
+                isAllowed = false;
                 Text += " Server " + player2.Name;
                 Listening();
             }
         }
         public GameScreen(string Filename, bool isMultiplayer) : this()
         {
-            //TODO: In the case where the client logs in, the dicelist needs to be cleared and posistion needs to be swapped. 
             string currentplayername = "";
             using (var sr = new StreamReader(Filename))
             {
@@ -144,11 +143,19 @@ namespace KnuckleBones
         {
             multiplayer = true;
             if (!isServer)
+            //Client
             {
-                Text += " Client";
+                tick1 = false;
+                top = true;
+                currentplayer = player1;
+                StartPosition = FormStartPosition.Manual;
+                Text += " Client " + player1.Name;
                 Connecting(hostname);
+                EmptyDicelist(false);
+                TurnTimer.Enabled = true;
             }
             else
+            //Server
             {
                 Text += " Server";
                 Listening();
@@ -311,7 +318,7 @@ namespace KnuckleBones
         }
         void ShowScores()
         {
-            //TODO: Something we weird with player 2 score ?? 
+            //TODO: Something weird with player 2 score ?? 
             string P1 = player1.Name + " = " + player1.Score.ToString(), P2 = player2.Name + " = " + player2.Score.ToString();
             p1score.Text = P1;
             p2score.Text = P2;
@@ -690,7 +697,7 @@ namespace KnuckleBones
                         top = false;
                         lSave.Text = "Saveable";
                         saveable = true;
-                        if (tick1)
+                        if (!tick1)
                         {
                             MultiplayerTurns(player2, true);
                         }
